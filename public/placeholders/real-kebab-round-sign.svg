@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" role="img" aria-label="Kebab Real Istanbul round sign">
+  <defs>
+    <radialGradient id="face" cx="50%" cy="40%" r="62%">
+      <stop offset="0%" stop-color="#3a2f26"/>
+      <stop offset="58%" stop-color="#241f1a"/>
+      <stop offset="100%" stop-color="#12100e"/>
+    </radialGradient>
+    <linearGradient id="redEdge" x1="18%" x2="82%" y1="16%" y2="86%">
+      <stop offset="0%" stop-color="#ff6268"/>
+      <stop offset="50%" stop-color="#cf2630"/>
+      <stop offset="100%" stop-color="#751014"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="24" stdDeviation="22" flood-color="#000000" flood-opacity="0.34"/>
+    </filter>
+    <filter id="glow" x="-25%" y="-25%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#fff2b0" flood-opacity="0.7"/>
+    </filter>
+  </defs>
+  <circle cx="500" cy="500" r="462" fill="url(#redEdge)" filter="url(#softShadow)"/>
+  <circle cx="500" cy="500" r="415" fill="url(#face)" stroke="#e13a44" stroke-width="16"/>
+  <circle cx="500" cy="500" r="254" fill="none" stroke="#fff0b8" stroke-width="15" opacity="0.92"/>
+  <circle cx="232" cy="500" r="13" fill="#fff0b8"/>
+  <circle cx="768" cy="500" r="13" fill="#fff0b8"/>
+  <text x="500" y="230" text-anchor="middle" fill="#fff0b8" font-family="Arial Black, Arial, sans-serif" font-size="102" font-weight="900" filter="url(#glow)">KEBAB REAL</text>
+  <text x="500" y="818" text-anchor="middle" fill="#fff0b8" font-family="Arial Black, Arial, sans-serif" font-size="112" font-weight="900" filter="url(#glow)">ISTANBUL</text>
+  <g transform="translate(500 500) rotate(10)">
+    <path d="M-29 186 17 178 8 247-9 250z" fill="#ff5b60"/>
+    <path d="M-21-160c40-13 91 3 116 40 24 35 25 81 3 119-14 25-37 44-64 53l-107 34c-23 7-47-9-50-33l-11-86c-7-56 30-109 84-126z" fill="#d2232d"/>
+    <path d="M-77-82c37-15 82-12 119 8 20 11 37 27 49 45" fill="none" stroke="#ff8086" stroke-width="22" stroke-linecap="round"/>
+    <path d="M-96-13c46-12 99-3 139 24" fill="none" stroke="#ff8086" stroke-width="22" stroke-linecap="round"/>
+    <path d="M-81 55c38-11 81-5 114 16" fill="none" stroke="#ff8086" stroke-width="22" stroke-linecap="round"/>
+    <path d="M34-190 62-223" stroke="#ff8086" stroke-width="18" stroke-linecap="round"/>
+    <path d="M74-176 101-209" stroke="#ff8086" stroke-width="18" stroke-linecap="round"/>
+  </g>
+</svg>

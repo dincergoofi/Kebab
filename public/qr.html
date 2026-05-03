@@ -1,0 +1,616 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Real Kebab QR Baskı Aracı</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #16110d;
+        --muted: #6f6258;
+        --line: #d9c9b8;
+        --paper: #fffaf4;
+        --brand: #c9151b;
+        --gold: #f6c84f;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: #efe4d6;
+        color: var(--ink);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      main {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 28px 18px 56px;
+      }
+
+      .toolbar {
+        display: grid;
+        gap: 16px;
+        margin-bottom: 22px;
+        padding: 18px;
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: 0 18px 50px rgba(43, 28, 14, 0.12);
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(26px, 4vw, 42px);
+        line-height: 1;
+      }
+
+      p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .controls {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .controls .wide {
+        grid-column: span 2;
+      }
+
+      .controls .full {
+        grid-column: 1 / -1;
+      }
+
+      label {
+        display: grid;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0;
+      }
+
+      input {
+        width: 100%;
+        min-height: 44px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 10px 12px;
+        background: #fff;
+        color: var(--ink);
+        font: inherit;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      button {
+        min-height: 44px;
+        border: 0;
+        border-radius: 6px;
+        padding: 0 16px;
+        background: var(--brand);
+        color: #fff;
+        font: inherit;
+        font-weight: 900;
+        cursor: pointer;
+      }
+
+      button.secondary {
+        background: #211814;
+      }
+
+      .sheet {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 14px;
+      }
+
+      .qr-card {
+        min-height: 330px;
+        display: grid;
+        align-content: space-between;
+        gap: 14px;
+        padding: 18px;
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        break-inside: avoid;
+      }
+
+      .brand {
+        display: grid;
+        gap: 6px;
+        text-align: center;
+      }
+
+      .brand img {
+        width: 54px;
+        height: 54px;
+        justify-self: center;
+        object-fit: cover;
+        border-radius: 50%;
+      }
+
+      .brand strong {
+        font-size: 20px;
+        line-height: 1.05;
+      }
+
+      .brand span,
+      .url {
+        color: var(--muted);
+        font-size: 12px;
+        overflow-wrap: anywhere;
+      }
+
+      .qr {
+        display: grid;
+        place-items: center;
+      }
+
+      .qr svg {
+        width: min(100%, 190px);
+        aspect-ratio: 1;
+        display: block;
+        border: 8px solid #fff;
+        background: #fff;
+      }
+
+      .table {
+        display: grid;
+        place-items: center;
+        min-height: 48px;
+        border: 1px solid rgba(201, 21, 27, 0.28);
+        border-radius: 6px;
+        background: #fff5e2;
+        color: var(--brand);
+        font-size: 22px;
+        font-weight: 1000;
+        text-transform: uppercase;
+      }
+
+      .hint {
+        color: var(--ink);
+        font-size: 13px;
+        font-weight: 800;
+        text-align: center;
+      }
+
+      .wifi {
+        display: none;
+        padding: 8px;
+        border: 1px dashed var(--line);
+        border-radius: 6px;
+        color: var(--muted);
+        font-size: 12px;
+        text-align: center;
+      }
+
+      .wifi.is-visible {
+        display: block;
+      }
+
+      @media (max-width: 760px) {
+        .controls {
+          grid-template-columns: 1fr;
+        }
+
+        .controls .wide,
+        .controls .full {
+          grid-column: auto;
+        }
+      }
+
+      @media print {
+        body {
+          background: #fff;
+        }
+
+        main {
+          max-width: none;
+          padding: 0;
+        }
+
+        .toolbar {
+          display: none;
+        }
+
+        .sheet {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 8mm;
+        }
+
+        .qr-card {
+          box-shadow: none;
+          min-height: 0;
+          page-break-inside: avoid;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="toolbar">
+        <div>
+          <h1>QR Baskı Aracı</h1>
+          <p>Canlı site adresini gir, masa sayısını seç, baskıya hazır QR kartlarını üret.</p>
+        </div>
+
+        <div class="controls">
+          <label>
+            Canlı base URL
+            <input id="baseUrl" value="https://real-kebab-istanbul.vercel.app" />
+          </label>
+          <label>
+            Restoran slug
+            <input id="slug" value="real-kebab-istanbul" />
+          </label>
+          <label>
+            Masa sayısı
+            <input id="count" type="number" min="1" max="80" value="12" />
+          </label>
+          <label>
+            Başlangıç masa no
+            <input id="start" type="number" min="1" max="999" value="1" />
+          </label>
+          <label class="wide">
+            Restoran adresi
+            <input id="address" value="C. Real, 204, 11100 San Fernando, Cadiz" />
+          </label>
+          <label class="wide">
+            Logo URL
+            <input id="logo" value="/placeholders/real-kebab-round-sign.svg" />
+          </label>
+          <label class="wide">
+            Wi-Fi adı
+            <input id="wifiName" placeholder="İsteğe bağlı" />
+          </label>
+          <label class="wide">
+            Wi-Fi şifresi
+            <input id="wifiPass" placeholder="İsteğe bağlı" />
+          </label>
+          <label class="full">
+            Özel masa etiketleri
+            <input id="labels" placeholder="Örn: Salon 1, Salon 2, Terraza 1, Terraza 2" />
+          </label>
+        </div>
+
+        <div class="actions">
+          <button type="button" id="render">QR kartlarını üret</button>
+          <button type="button" class="secondary" id="print">Yazdır / PDF kaydet</button>
+        </div>
+      </section>
+
+      <section class="sheet" id="sheet" aria-live="polite"></section>
+    </main>
+
+    <script>
+      const fields = {
+        baseUrl: document.getElementById("baseUrl"),
+        slug: document.getElementById("slug"),
+        count: document.getElementById("count"),
+        start: document.getElementById("start"),
+        address: document.getElementById("address"),
+        logo: document.getElementById("logo"),
+        wifiName: document.getElementById("wifiName"),
+        wifiPass: document.getElementById("wifiPass"),
+        labels: document.getElementById("labels")
+      };
+      const sheet = document.getElementById("sheet");
+
+      function cleanBaseUrl(value) {
+        return value.trim().replace(/\/+$/, "");
+      }
+
+      function cardUrl(baseUrl, slug, tableNumber) {
+        return `${baseUrl}/${slug}/masa-${tableNumber}`;
+      }
+
+      function makeQrSvg(text) {
+        const qr = createQrMatrix(text);
+        const quiet = 4;
+        const size = qr.length + quiet * 2;
+        const cells = [];
+
+        qr.forEach((row, y) => {
+          row.forEach((cell, x) => {
+            if (cell) {
+              cells.push(`<rect x="${x + quiet}" y="${y + quiet}" width="1" height="1" />`);
+            }
+          });
+        });
+
+        return `<svg viewBox="0 0 ${size} ${size}" role="img" aria-label="QR kod" xmlns="http://www.w3.org/2000/svg"><rect width="${size}" height="${size}" fill="#fff" /><g fill="#111">${cells.join("")}</g></svg>`;
+      }
+
+      function createQrMatrix(text) {
+        const version = 5;
+        const size = 17 + version * 4;
+        const dataCodewords = 108;
+        const eccCodewords = 26;
+        const bytes = Array.from(new TextEncoder().encode(text));
+
+        if (bytes.length > 104) {
+          throw new Error("URL cok uzun. Daha kisa domain veya slug kullanin.");
+        }
+
+        const bits = [];
+        appendBits(bits, 0b0100, 4);
+        appendBits(bits, bytes.length, 8);
+        bytes.forEach((byte) => appendBits(bits, byte, 8));
+        appendBits(bits, 0, Math.min(4, dataCodewords * 8 - bits.length));
+        while (bits.length % 8) {
+          bits.push(0);
+        }
+
+        const data = [];
+        for (let index = 0; index < bits.length; index += 8) {
+          data.push(bits.slice(index, index + 8).reduce((value, bit) => (value << 1) | bit, 0));
+        }
+
+        for (let pad = 0xec; data.length < dataCodewords; pad = pad === 0xec ? 0x11 : 0xec) {
+          data.push(pad);
+        }
+
+        const codewords = data.concat(reedSolomonRemainder(data, eccCodewords));
+        const modules = Array.from({ length: size }, () => Array(size).fill(false));
+        const reserved = Array.from({ length: size }, () => Array(size).fill(false));
+
+        placeFunctionPatterns(modules, reserved, version);
+        placeDataBits(modules, reserved, codewords);
+        applyMask(modules, reserved);
+        placeFormatBits(modules, reserved, 0b01, 0);
+
+        return modules;
+      }
+
+      function appendBits(target, value, length) {
+        for (let shift = length - 1; shift >= 0; shift -= 1) {
+          target.push((value >>> shift) & 1);
+        }
+      }
+
+      function placeFunctionPatterns(modules, reserved, version) {
+        const size = modules.length;
+        placeFinder(modules, reserved, 0, 0);
+        placeFinder(modules, reserved, size - 7, 0);
+        placeFinder(modules, reserved, 0, size - 7);
+
+        for (let i = 8; i < size - 8; i += 1) {
+          setModule(modules, reserved, i, 6, i % 2 === 0, true);
+          setModule(modules, reserved, 6, i, i % 2 === 0, true);
+        }
+
+        placeAlignment(modules, reserved, 30, 30);
+        setModule(modules, reserved, 8, 4 * version + 9, true, true);
+
+        for (let i = 0; i < 9; i += 1) {
+          reserve(modules, reserved, 8, i);
+          reserve(modules, reserved, i, 8);
+        }
+        for (let i = size - 8; i < size; i += 1) {
+          reserve(modules, reserved, 8, i);
+          reserve(modules, reserved, i, 8);
+        }
+      }
+
+      function placeFinder(modules, reserved, left, top) {
+        for (let y = -1; y <= 7; y += 1) {
+          for (let x = -1; x <= 7; x += 1) {
+            const xx = left + x;
+            const yy = top + y;
+            if (xx < 0 || yy < 0 || xx >= modules.length || yy >= modules.length) {
+              continue;
+            }
+            const black = x >= 0 && x <= 6 && y >= 0 && y <= 6 && (x === 0 || x === 6 || y === 0 || y === 6 || (x >= 2 && x <= 4 && y >= 2 && y <= 4));
+            setModule(modules, reserved, xx, yy, black, true);
+          }
+        }
+      }
+
+      function placeAlignment(modules, reserved, centerX, centerY) {
+        for (let y = -2; y <= 2; y += 1) {
+          for (let x = -2; x <= 2; x += 1) {
+            const black = Math.max(Math.abs(x), Math.abs(y)) !== 1;
+            setModule(modules, reserved, centerX + x, centerY + y, black, true);
+          }
+        }
+      }
+
+      function reserve(modules, reserved, x, y) {
+        if (x >= 0 && y >= 0 && x < modules.length && y < modules.length) {
+          reserved[y][x] = true;
+        }
+      }
+
+      function setModule(modules, reserved, x, y, value, isReserved) {
+        modules[y][x] = Boolean(value);
+        if (isReserved) {
+          reserved[y][x] = true;
+        }
+      }
+
+      function placeDataBits(modules, reserved, codewords) {
+        const size = modules.length;
+        const bits = [];
+        codewords.forEach((codeword) => appendBits(bits, codeword, 8));
+        let bitIndex = 0;
+        let upward = true;
+
+        for (let right = size - 1; right >= 1; right -= 2) {
+          if (right === 6) {
+            right -= 1;
+          }
+
+          for (let vertical = 0; vertical < size; vertical += 1) {
+            const y = upward ? size - 1 - vertical : vertical;
+            for (let dx = 0; dx < 2; dx += 1) {
+              const x = right - dx;
+              if (!reserved[y][x]) {
+                modules[y][x] = bitIndex < bits.length ? bits[bitIndex] === 1 : false;
+                bitIndex += 1;
+              }
+            }
+          }
+
+          upward = !upward;
+        }
+      }
+
+      function applyMask(modules, reserved) {
+        for (let y = 0; y < modules.length; y += 1) {
+          for (let x = 0; x < modules.length; x += 1) {
+            if (!reserved[y][x] && (x + y) % 2 === 0) {
+              modules[y][x] = !modules[y][x];
+            }
+          }
+        }
+      }
+
+      function placeFormatBits(modules, reserved, errorLevelBits, mask) {
+        const size = modules.length;
+        let data = (errorLevelBits << 3) | mask;
+        let bits = data << 10;
+        const generator = 0x537;
+
+        for (let shift = 14; shift >= 10; shift -= 1) {
+          if ((bits >>> shift) & 1) {
+            bits ^= generator << (shift - 10);
+          }
+        }
+
+        const format = ((data << 10) | bits) ^ 0x5412;
+        const bit = (index) => ((format >>> index) & 1) === 1;
+
+        for (let i = 0; i <= 5; i += 1) {
+          setModule(modules, reserved, 8, i, bit(i), true);
+        }
+        setModule(modules, reserved, 8, 7, bit(6), true);
+        setModule(modules, reserved, 8, 8, bit(7), true);
+        setModule(modules, reserved, 7, 8, bit(8), true);
+        for (let i = 9; i < 15; i += 1) {
+          setModule(modules, reserved, 14 - i, 8, bit(i), true);
+        }
+
+        for (let i = 0; i < 8; i += 1) {
+          setModule(modules, reserved, size - 1 - i, 8, bit(i), true);
+        }
+        for (let i = 8; i < 15; i += 1) {
+          setModule(modules, reserved, 8, size - 15 + i, bit(i), true);
+        }
+      }
+
+      function reedSolomonRemainder(data, degree) {
+        const generator = reedSolomonGenerator(degree);
+        const result = Array(degree).fill(0);
+
+        data.forEach((byte) => {
+          const factor = byte ^ result.shift();
+          result.push(0);
+          generator.forEach((coefficient, index) => {
+            result[index] ^= gfMultiply(coefficient, factor);
+          });
+        });
+
+        return result;
+      }
+
+      function reedSolomonGenerator(degree) {
+        let poly = [1];
+        for (let i = 0; i < degree; i += 1) {
+          const next = Array(poly.length + 1).fill(0);
+          poly.forEach((coefficient, index) => {
+            next[index] ^= gfMultiply(coefficient, 1);
+            next[index + 1] ^= gfMultiply(coefficient, gfPow(2, i));
+          });
+          poly = next;
+        }
+        return poly.slice(1);
+      }
+
+      function gfPow(value, power) {
+        let result = 1;
+        for (let i = 0; i < power; i += 1) {
+          result = gfMultiply(result, value);
+        }
+        return result;
+      }
+
+      function gfMultiply(a, b) {
+        let result = 0;
+        while (b > 0) {
+          if (b & 1) {
+            result ^= a;
+          }
+          a <<= 1;
+          if (a & 0x100) {
+            a ^= 0x11d;
+          }
+          b >>>= 1;
+        }
+        return result;
+      }
+
+      function renderCards() {
+        const baseUrl = cleanBaseUrl(fields.baseUrl.value);
+        const slug = fields.slug.value.trim() || "real-kebab-istanbul";
+        const count = Math.max(1, Math.min(80, Number(fields.count.value) || 1));
+        const start = Math.max(1, Number(fields.start.value) || 1);
+        const address = fields.address.value.trim();
+        const logo = fields.logo.value.trim();
+        const wifiName = fields.wifiName.value.trim();
+        const wifiPass = fields.wifiPass.value.trim();
+        const labels = fields.labels.value
+          .split(",")
+          .map((label) => label.trim())
+          .filter(Boolean);
+
+        sheet.innerHTML = "";
+
+        try {
+          for (let index = 0; index < count; index += 1) {
+            const tableNumber = start + index;
+            const url = cardUrl(baseUrl, slug, tableNumber);
+            const tableLabel = labels[index] || `Mesa ${tableNumber}`;
+            const card = document.createElement("article");
+            card.className = "qr-card";
+            card.innerHTML = `
+              <div class="brand">
+                ${logo ? `<img src="${logo}" alt="" />` : ""}
+                <strong>Kebab Real Istanbul</strong>
+                <span>Escanea para abrir el menu</span>
+                ${address ? `<span>${address}</span>` : ""}
+              </div>
+              <div class="qr">${makeQrSvg(url)}</div>
+              <div class="table">${tableLabel}</div>
+              <div class="hint">Menu digital · Pedido por telefono · Valoraciones</div>
+              <div class="wifi ${wifiName || wifiPass ? "is-visible" : ""}">
+                ${wifiName ? `Wi-Fi: ${wifiName}` : ""}${wifiName && wifiPass ? " · " : ""}${wifiPass ? `Clave: ${wifiPass}` : ""}
+              </div>
+              <div class="url">${url}</div>
+            `;
+            sheet.appendChild(card);
+          }
+        } catch (error) {
+          sheet.innerHTML = `<article class="qr-card"><div class="brand"><strong>QR uretilemedi</strong><span>${error.message}</span></div></article>`;
+        }
+      }
+
+      document.getElementById("render").addEventListener("click", renderCards);
+      document.getElementById("print").addEventListener("click", () => window.print());
+
+      renderCards();
+    </script>
+  </body>
+</html>

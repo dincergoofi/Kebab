@@ -1,0 +1,19 @@
+{
+  "name": "Real Kebab Istanbul QR Menu",
+  "short_name": "Real Kebab",
+  "description": "QR menu, phone ordering, feedback and waiting game for Real Kebab Istanbul.",
+  "lang": "es-ES",
+  "start_url": "/real-kebab-istanbul/masa-1",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#150e0a",
+  "theme_color": "#c9151b",
+  "icons": [
+    {
+      "src": "/placeholders/real-kebab-round-sign.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

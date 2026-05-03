@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" role="img" aria-label="Chef catcher">
+  <defs>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="16" stdDeviation="12" flood-color="#000000" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+  <g filter="url(#shadow)">
+    <circle cx="160" cy="92" r="46" fill="#f1c09a"/>
+    <path d="M96 88c-12-34 12-64 43-55 10-30 58-31 70 0 34-7 58 30 39 60z" fill="#ffffff" stroke="#deded7" stroke-width="8"/>
+    <path d="M108 191c10-47 44-73 52-73s42 26 52 73l18 89H90z" fill="#ffffff" stroke="#deded7" stroke-width="8"/>
+    <path d="M131 136c20 18 39 18 58 0" stroke="#c9151b" stroke-width="11" stroke-linecap="round"/>
+    <circle cx="142" cy="87" r="6" fill="#171717"/>
+    <circle cx="178" cy="87" r="6" fill="#171717"/>
+    <path d="M134 111c17 10 35 10 52 0" stroke="#7f3e2b" stroke-width="7" stroke-linecap="round"/>
+    <path d="M72 228h176c18 0 31 14 31 31v9H41v-9c0-17 13-31 31-31z" fill="#2f2b24" stroke="#171717" stroke-width="8"/>
+    <path d="M80 226c55 25 109 25 164 0" stroke="#f5c542" stroke-width="10" stroke-linecap="round"/>
+  </g>
+</svg>

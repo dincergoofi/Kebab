@@ -1,0 +1,28 @@
+﻿{
+  "slug": "real-kebab-istanbul",
+  "name": "Kebab Real Istanbul",
+  "city": "San Fernando",
+  "country_code": "ES",
+  "default_language": "es",
+  "address": "C. Real, 204, 11100 San Fernando, Cadiz, Spain",
+  "phone": "+34 612 58 28 37",
+  "whatsapp_number": "34612582837",
+  "hours": "Mar-Jue 13:00-16:00 · 20:00-00:00 · Vie-Sab hasta 00:30 · Dom hasta 00:00 · Lun cerrado",
+  "custom_link": "https://www.realistanbul.es",
+  "google_place_id": "",
+  "google_review_url": "https://www.google.com/search?sa=X&sca_esv=1264130d37fc9ab6&sxsrf=ANbL-n7ewADy5m7bXPooo47dGDNtU5yIgQ:1777739716501&q=Kebab+Real+Istambul+Yorumlar&rflfq=1&num=20&stick=H4sIAAAAAAAAAONgkxK2NDE3sjQzMTQyMje1MDczMjAw3sDI-IpRxjs1KTFJISg1MUfBs7gkMTepNEchMr-oNDcnsWgRK15pAEyif5FYAAAA&rldimm=9472964122758762003&tbm=lcl&hl=tr-TR&ved=2ahUKEwjrk7jChJuUAxVaB9sEHWgZJuUQ9fQKegQIUBAG&biw=1536&bih=730&dpr=1.25#lkt=LocalPoiReviews",
+  "tagline_tr": "San Fernando'da gercek Istanbul lezzeti.",
+  "tagline_es": "El autentico sabor de Estambul en San Fernando.",
+  "tagline_en": "Authentic Istanbul flavor in San Fernando.",
+  "logo_image_url": "/brand/real-istanbul-logo-luxe.png",
+  "cover_image_url": "/brand/real-istanbul-hero-kebab.png",
+  "hero_video_url": "",
+  "social_links": [
+    { "label": "Instagram", "url": "https://www.instagram.com/realistanbul.es" }
+  ],
+  "theme": {
+    "primary": "#c9151b",
+    "accent": "#f5c542",
+    "fresh": "#138a50"
+  }
+}
