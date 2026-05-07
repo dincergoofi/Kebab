@@ -1,9 +1,9 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="tr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Real Kebab QR Baskı Aracı</title>
+    <title>Real Kebab QR Baski Araci</title>
     <style>
       :root {
         color-scheme: light;
@@ -243,13 +243,13 @@
     <main>
       <section class="toolbar">
         <div>
-          <h1>QR Baskı Aracı</h1>
-          <p>Canlı site adresini gir, masa sayısını seç, baskıya hazır QR kartlarını üret.</p>
+          <h1>QR Baski Araci</h1>
+          <p>Canli site adresini gir, masa sayisini sec, baskiya hazir QR kartlarini uret.</p>
         </div>
 
         <div class="controls">
           <label>
-            Canlı base URL
+            Canli base URL
             <input id="baseUrl" placeholder="https://your-domain.example" />
           </label>
           <label>
@@ -257,11 +257,11 @@
             <input id="slug" value="real-kebab-istanbul" />
           </label>
           <label>
-            Masa sayısı
+            Masa sayisi
             <input id="count" type="number" min="1" max="80" value="12" />
           </label>
           <label>
-            Başlangıç masa no
+            Baslangic masa no
             <input id="start" type="number" min="1" max="999" value="1" />
           </label>
           <label class="wide">
@@ -273,22 +273,22 @@
             <input id="logo" value="/placeholders/real-kebab-round-sign.svg" />
           </label>
           <label class="wide">
-            Wi-Fi adı
-            <input id="wifiName" placeholder="İsteğe bağlı" />
+            Wi-Fi adi
+            <input id="wifiName" placeholder="Istege bagli" />
           </label>
           <label class="wide">
-            Wi-Fi şifresi
-            <input id="wifiPass" placeholder="İsteğe bağlı" />
+            Wi-Fi sifresi
+            <input id="wifiPass" placeholder="Istege bagli" />
           </label>
           <label class="full">
-            Özel masa etiketleri
-            <input id="labels" placeholder="Örn: Salon 1, Salon 2, Terraza 1, Terraza 2" />
+            Ozel masa etiketleri
+            <input id="labels" placeholder="Orn: Salon 1, Salon 2, Terraza 1, Terraza 2" />
           </label>
         </div>
 
         <div class="actions">
-          <button type="button" id="render">QR kartlarını üret</button>
-          <button type="button" class="secondary" id="print">Yazdır / PDF kaydet</button>
+          <button type="button" id="render">QR kartlarini uret</button>
+          <button type="button" class="secondary" id="print">Yazdir / PDF kaydet</button>
         </div>
       </section>
 
@@ -323,6 +323,15 @@
 
       function cardUrl(baseUrl, slug, tableNumber) {
         return `${baseUrl}/${slug}/masa-${tableNumber}`;
+      }
+
+      function applyQueryPreset() {
+        const params = new URLSearchParams(window.location.search);
+        Object.entries(fields).forEach(([key, field]) => {
+          if (params.has(key)) {
+            field.value = params.get(key) || "";
+          }
+        });
       }
 
       function makeQrSvg(text) {
@@ -618,6 +627,7 @@
       document.getElementById("render").addEventListener("click", renderCards);
       document.getElementById("print").addEventListener("click", () => window.print());
 
+      applyQueryPreset();
       fields.baseUrl.value = cleanBaseUrl(fields.baseUrl.value) || defaultBaseUrl();
       renderCards();
     </script>
