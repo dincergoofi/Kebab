@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { PLACEHOLDER_IMAGES } from "../config/appConfig.js";
 import { repairMojibake } from "../utils/text.js";
 
@@ -7,6 +7,7 @@ const INTRO_COPY = {
     skip: "Gec",
     continue: "Devam",
     scenes: [
+      { eyebrow: "ONCE", title: "Hazirlik", note: "Bir sonraki sahne atesin basinda", duration: 2950 },
       { eyebrow: "ATESTE", title: "Doner", note: "Alevden masaya taze kesim", duration: 3600 },
       { eyebrow: "ANINDA", title: "Durum", note: "Sar, kes, servis et", duration: 2200 },
       { eyebrow: "BUZ GIBI", title: "Soguk", note: "Son dokunus masaya gelsin", duration: 1900 }
@@ -16,6 +17,7 @@ const INTRO_COPY = {
     skip: "Saltar",
     continue: "Continuar",
     scenes: [
+      { eyebrow: "ANTES", title: "Preparacion", note: "La siguiente escena arranca junto al fuego", duration: 2950 },
       { eyebrow: "AL FUEGO", title: "Doner", note: "Corte fresco directo a la mesa", duration: 3600 },
       { eyebrow: "RECIEN HECHO", title: "Rollo", note: "Se arma, se corta y se sirve", duration: 2200 },
       { eyebrow: "MUY FRIA", title: "Bebida", note: "El final fresco para cerrar la escena", duration: 1900 }
@@ -25,6 +27,7 @@ const INTRO_COPY = {
     skip: "Skip",
     continue: "Continue",
     scenes: [
+      { eyebrow: "FIRST", title: "Prep", note: "The next beat starts right by the flame", duration: 2950 },
       { eyebrow: "ON FIRE", title: "Doner", note: "Fresh cut straight from the flame", duration: 3600 },
       { eyebrow: "MADE NOW", title: "Wrap", note: "Rolled, cut and served hot", duration: 2200 },
       { eyebrow: "ICE COLD", title: "Drinks", note: "A chilled finish for the last beat", duration: 1900 }
@@ -46,16 +49,59 @@ function pickProductImage(products = [], ids = [], fallback = "") {
   return fallback;
 }
 
-function SceneMedia({ scene }) {
+function SceneMedia({ scene, isActive }) {
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) {
+      return undefined;
+    }
+
+    if (!isActive) {
+      video.pause();
+      return undefined;
+    }
+
+    const startAt = typeof scene.startAt === "number" ? scene.startAt : 0;
+
+    const syncPlayback = () => {
+      if (startAt > 0 && Math.abs(video.currentTime - startAt) > 0.15) {
+        try {
+          video.currentTime = startAt;
+        } catch {
+          // Ignore seek timing failures until metadata is fully ready.
+        }
+      }
+
+      const playAttempt = video.play();
+      if (playAttempt?.catch) {
+        playAttempt.catch(() => {});
+      }
+    };
+
+    if (video.readyState >= 1) {
+      syncPlayback();
+    } else {
+      video.addEventListener("loadedmetadata", syncPlayback, { once: true });
+    }
+
+    return () => {
+      video.pause();
+      video.removeEventListener("loadedmetadata", syncPlayback);
+    };
+  }, [isActive, scene.startAt, scene.video]);
+
   if (scene.video) {
     return (
       <video
-        autoPlay
+        ref={videoRef}
         className="intro-scene-media"
         loop
         muted
         playsInline
         poster={scene.poster || scene.image || ""}
+        preload="auto"
         src={scene.video}
         style={{ objectPosition: scene.position }}
       />
@@ -70,23 +116,28 @@ export default function OpeningIntro({ restaurant, products = [], language = "es
   const [isLeaving, setIsLeaving] = useState(false);
   const introCopy = INTRO_COPY[language] || INTRO_COPY.es;
   const venueName = repairMojibake(restaurant?.name || "Real Kebab Istanbul");
+  const donerPoster = pickProductImage(
+    products,
+    ["plato-kebab-patatas", "patatas-con-carne", "plato-kebab", "carne-con-arroz"],
+    restaurant?.cover_image_url || PLACEHOLDER_IMAGES.foostBoxDark
+  );
 
   const scenes = useMemo(
     () => [
       {
-        image: pickProductImage(
-          products,
-          ["plato-kebab-patatas", "patatas-con-carne", "plato-kebab", "carne-con-arroz"],
-          restaurant?.cover_image_url || PLACEHOLDER_IMAGES.foostBoxDark
-        ),
-        video: restaurant?.hero_video_url || PLACEHOLDER_IMAGES.openingPrepVideo,
-        poster: pickProductImage(
-          products,
-          ["plato-kebab-patatas", "patatas-con-carne", "plato-kebab", "carne-con-arroz"],
-          restaurant?.cover_image_url || PLACEHOLDER_IMAGES.foostBoxDark
-        ),
-        position: "center 54%",
+        image: donerPoster,
+        video: PLACEHOLDER_IMAGES.openingTeaserVideo,
+        poster: donerPoster,
+        position: "center 48%",
+        startAt: 2.85,
         ...introCopy.scenes[0]
+      },
+      {
+        image: donerPoster,
+        video: restaurant?.hero_video_url || PLACEHOLDER_IMAGES.openingPrepVideo,
+        poster: donerPoster,
+        position: "center 54%",
+        ...introCopy.scenes[1]
       },
       {
         image: pickProductImage(
@@ -95,7 +146,7 @@ export default function OpeningIntro({ restaurant, products = [], language = "es
           PLACEHOLDER_IMAGES.dishKebabWrapMarble
         ),
         position: "center 52%",
-        ...introCopy.scenes[1]
+        ...introCopy.scenes[2]
       },
       {
         image: pickProductImage(
@@ -104,10 +155,10 @@ export default function OpeningIntro({ restaurant, products = [], language = "es
           PLACEHOLDER_IMAGES.drinkSofts
         ),
         position: "center 50%",
-        ...introCopy.scenes[2]
+        ...introCopy.scenes[3]
       }
     ],
-    [introCopy.scenes, products, restaurant?.cover_image_url, restaurant?.hero_video_url]
+    [donerPoster, introCopy.scenes, products, restaurant?.hero_video_url]
   );
 
   useEffect(() => {
@@ -154,7 +205,7 @@ export default function OpeningIntro({ restaurant, products = [], language = "es
           className={`intro-scene${index === activeIndex ? " is-active" : ""}${index < activeIndex ? " is-past" : ""}`}
           aria-hidden={index !== activeIndex}
         >
-          <SceneMedia scene={scene} />
+          <SceneMedia scene={scene} isActive={index === activeIndex} />
           <div className="intro-scene-shade" />
           <div className="intro-scene-copy">
             <span>{scene.eyebrow}</span>

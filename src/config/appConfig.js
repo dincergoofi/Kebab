@@ -15,6 +15,7 @@ export const PLACEHOLDER_IMAGES = {
   logoLuxe: "/brand/real-istanbul-logo-luxe.png",
   brandIcons: "/brand/brand-icons-luxe.png",
   openingPrepVideo: "/brand/opening-prep.mp4",
+  openingTeaserVideo: "/brand/opening-teaser.mp4",
   foostBoxDark: "/brand/dish-plate-box-dark.jpg",
   foostTrayCola: "/brand/dish-plate-trays-cola.jpg",
   foostBoxLight: "/brand/dish-plate-box-light.jpg",
@@ -47,6 +48,7 @@ export const PLACEHOLDER_IMAGES = {
   chef: "/placeholders/game-chef.svg",
   burnt: "/placeholders/burnt-doner.svg"
 };
+
 
 
 
