@@ -7285,3 +7285,103 @@ body {
     min-height: 2.65rem;
   }
 }
+
+/* Venue hours emphasis */
+.venue-info-card {
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  min-width: 0;
+  padding: 0.65rem;
+}
+
+.venue-info-card small,
+.venue-info-card strong {
+  display: block;
+}
+
+.venue-info-card small {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.venue-info-card strong {
+  font-size: 0.88rem;
+  line-height: 1.25;
+  margin-top: 0.2rem;
+}
+
+.venue-info-card.is-hours {
+  background:
+    radial-gradient(circle at top right, rgba(245, 197, 66, 0.16), transparent 11rem),
+    linear-gradient(135deg, rgba(201, 21, 27, 0.1), rgba(255, 255, 255, 0.02)),
+    var(--soft);
+  grid-column: 1 / -1;
+  padding: 0.8rem;
+}
+
+.venue-hours-head {
+  align-items: center;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.venue-hours-head .venue-status {
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  line-height: 1;
+  margin: 0;
+  padding: 0.28rem 0.58rem;
+}
+
+.venue-hours-list {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 0.78rem;
+}
+
+.venue-hours-row {
+  align-items: start;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  display: grid;
+  gap: 0.18rem 0.75rem;
+  grid-template-columns: minmax(0, 6.4rem) 1fr;
+  padding: 0.62rem 0.72rem;
+}
+
+.venue-hours-row.is-today {
+  background: rgba(245, 197, 66, 0.08);
+  border-color: rgba(245, 197, 66, 0.34);
+  box-shadow: inset 0 0 0 1px rgba(245, 197, 66, 0.18);
+}
+
+.venue-hours-day {
+  color: var(--yellow);
+  font-size: 0.76rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.venue-hours-row strong {
+  margin: 0;
+}
+
+@media (max-width: 560px) {
+  .venue-hours-head {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .venue-hours-row {
+    grid-template-columns: 1fr;
+  }
+
+  .venue-hours-day {
+    font-size: 0.72rem;
+  }
+}
