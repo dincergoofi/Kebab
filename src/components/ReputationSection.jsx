@@ -139,13 +139,17 @@ export default function ReputationSection({ restaurant, language, copy, onSubmit
   async function openGoogle() {
     await save("google");
     onTrackEvent("google_review_clicked", { stars });
-    window.location.href = action.googleUrl;
+    if (action?.googleUrl) {
+      window.location.href = action.googleUrl;
+    }
   }
 
   async function openWhatsApp() {
     await save("whatsapp");
     onTrackEvent("whatsapp_clicked", { stars });
-    window.location.href = action.whatsappUrl;
+    if (action?.whatsappUrl) {
+      window.location.href = action.whatsappUrl;
+    }
   }
 
   return (

@@ -66,22 +66,22 @@ where c.restaurant_id = restaurant.id
 
 with restaurant as (select id from public.restaurants where slug = 'real-kebab-istanbul')
 insert into public.categories (id, restaurant_id, name_tr, name_es, name_en, order_index, is_active)
-select gen_random_uuid(), restaurant.id, 'Tamamlayicilar / Fast Food', 'Complementos / Fast Food', 'Sides / Fast Food', 20, true
+select gen_random_uuid(), restaurant.id, 'Yan Lezzetler', 'Complementos', 'Sides', 20, true
 from restaurant
 where not exists (
   select 1 from public.categories c
   where c.restaurant_id = restaurant.id
-    and c.name_es = 'Complementos / Fast Food'
+    and c.name_es = 'Complementos'
 );
 with restaurant as (select id from public.restaurants where slug = 'real-kebab-istanbul')
 update public.categories c set
-  name_tr = 'Tamamlayicilar / Fast Food',
-  name_en = 'Sides / Fast Food',
+  name_tr = 'Yan Lezzetler',
+  name_en = 'Sides',
   order_index = 20,
   is_active = true
 from restaurant
 where c.restaurant_id = restaurant.id
-  and c.name_es = 'Complementos / Fast Food';
+  and c.name_es = 'Complementos';
 
 with restaurant as (select id from public.restaurants where slug = 'real-kebab-istanbul')
 insert into public.categories (id, restaurant_id, name_tr, name_es, name_en, order_index, is_active)
@@ -731,7 +731,7 @@ where p.restaurant_id = restaurant.id
   and p.name_es = 'Kebab rollo menu';
 
 with restaurant as (select id from public.restaurants where slug = 'real-kebab-istanbul'),
-category as (select c.id from public.categories c, restaurant where c.restaurant_id = restaurant.id and c.name_es = 'Complementos / Fast Food' limit 1)
+category as (select c.id from public.categories c, restaurant where c.restaurant_id = restaurant.id and c.name_es = 'Complementos' limit 1)
 insert into public.products (
   restaurant_id, category_id, name_tr, name_es, name_en, description_tr, description_es, description_en,
   price, currency, image_url, ingredients, allergens, calories, spice_level,
@@ -748,7 +748,7 @@ where not exists (
     and p.name_es = 'Hamburguesa pollo menu'
 );
 with restaurant as (select id from public.restaurants where slug = 'real-kebab-istanbul'),
-category as (select c.id from public.categories c, restaurant where c.restaurant_id = restaurant.id and c.name_es = 'Complementos / Fast Food' limit 1)
+category as (select c.id from public.categories c, restaurant where c.restaurant_id = restaurant.id and c.name_es = 'Complementos' limit 1)
 update public.products p set
   category_id = category.id,
   name_tr = 'Tavuk Burger Menu',
@@ -776,7 +776,7 @@ where p.restaurant_id = restaurant.id
   and p.name_es = 'Hamburguesa pollo menu';
 
 with restaurant as (select id from public.restaurants where slug = 'real-kebab-istanbul'),
-category as (select c.id from public.categories c, restaurant where c.restaurant_id = restaurant.id and c.name_es = 'Complementos / Fast Food' limit 1)
+category as (select c.id from public.categories c, restaurant where c.restaurant_id = restaurant.id and c.name_es = 'Complementos' limit 1)
 insert into public.products (
   restaurant_id, category_id, name_tr, name_es, name_en, description_tr, description_es, description_en,
   price, currency, image_url, ingredients, allergens, calories, spice_level,
@@ -793,7 +793,7 @@ where not exists (
     and p.name_es = 'Rollo pequeno'
 );
 with restaurant as (select id from public.restaurants where slug = 'real-kebab-istanbul'),
-category as (select c.id from public.categories c, restaurant where c.restaurant_id = restaurant.id and c.name_es = 'Complementos / Fast Food' limit 1)
+category as (select c.id from public.categories c, restaurant where c.restaurant_id = restaurant.id and c.name_es = 'Complementos' limit 1)
 update public.products p set
   category_id = category.id,
   name_tr = 'Kucuk Durum',
@@ -821,7 +821,7 @@ where p.restaurant_id = restaurant.id
   and p.name_es = 'Rollo pequeno';
 
 with restaurant as (select id from public.restaurants where slug = 'real-kebab-istanbul'),
-category as (select c.id from public.categories c, restaurant where c.restaurant_id = restaurant.id and c.name_es = 'Complementos / Fast Food' limit 1)
+category as (select c.id from public.categories c, restaurant where c.restaurant_id = restaurant.id and c.name_es = 'Complementos' limit 1)
 insert into public.products (
   restaurant_id, category_id, name_tr, name_es, name_en, description_tr, description_es, description_en,
   price, currency, image_url, ingredients, allergens, calories, spice_level,
@@ -838,7 +838,7 @@ where not exists (
     and p.name_es = 'Falafel'
 );
 with restaurant as (select id from public.restaurants where slug = 'real-kebab-istanbul'),
-category as (select c.id from public.categories c, restaurant where c.restaurant_id = restaurant.id and c.name_es = 'Complementos / Fast Food' limit 1)
+category as (select c.id from public.categories c, restaurant where c.restaurant_id = restaurant.id and c.name_es = 'Complementos' limit 1)
 update public.products p set
   category_id = category.id,
   name_tr = 'Falafel',
@@ -866,7 +866,7 @@ where p.restaurant_id = restaurant.id
   and p.name_es = 'Falafel';
 
 with restaurant as (select id from public.restaurants where slug = 'real-kebab-istanbul'),
-category as (select c.id from public.categories c, restaurant where c.restaurant_id = restaurant.id and c.name_es = 'Complementos / Fast Food' limit 1)
+category as (select c.id from public.categories c, restaurant where c.restaurant_id = restaurant.id and c.name_es = 'Complementos' limit 1)
 insert into public.products (
   restaurant_id, category_id, name_tr, name_es, name_en, description_tr, description_es, description_en,
   price, currency, image_url, ingredients, allergens, calories, spice_level,
@@ -883,7 +883,7 @@ where not exists (
     and p.name_es = 'Nuggets de pollo'
 );
 with restaurant as (select id from public.restaurants where slug = 'real-kebab-istanbul'),
-category as (select c.id from public.categories c, restaurant where c.restaurant_id = restaurant.id and c.name_es = 'Complementos / Fast Food' limit 1)
+category as (select c.id from public.categories c, restaurant where c.restaurant_id = restaurant.id and c.name_es = 'Complementos' limit 1)
 update public.products p set
   category_id = category.id,
   name_tr = 'Tavuk Nuggets',
@@ -911,7 +911,7 @@ where p.restaurant_id = restaurant.id
   and p.name_es = 'Nuggets de pollo';
 
 with restaurant as (select id from public.restaurants where slug = 'real-kebab-istanbul'),
-category as (select c.id from public.categories c, restaurant where c.restaurant_id = restaurant.id and c.name_es = 'Complementos / Fast Food' limit 1)
+category as (select c.id from public.categories c, restaurant where c.restaurant_id = restaurant.id and c.name_es = 'Complementos' limit 1)
 insert into public.products (
   restaurant_id, category_id, name_tr, name_es, name_en, description_tr, description_es, description_en,
   price, currency, image_url, ingredients, allergens, calories, spice_level,
@@ -928,7 +928,7 @@ where not exists (
     and p.name_es = 'Alitas de pollo'
 );
 with restaurant as (select id from public.restaurants where slug = 'real-kebab-istanbul'),
-category as (select c.id from public.categories c, restaurant where c.restaurant_id = restaurant.id and c.name_es = 'Complementos / Fast Food' limit 1)
+category as (select c.id from public.categories c, restaurant where c.restaurant_id = restaurant.id and c.name_es = 'Complementos' limit 1)
 update public.products p set
   category_id = category.id,
   name_tr = 'Tavuk Kanat',
@@ -956,7 +956,7 @@ where p.restaurant_id = restaurant.id
   and p.name_es = 'Alitas de pollo';
 
 with restaurant as (select id from public.restaurants where slug = 'real-kebab-istanbul'),
-category as (select c.id from public.categories c, restaurant where c.restaurant_id = restaurant.id and c.name_es = 'Complementos / Fast Food' limit 1)
+category as (select c.id from public.categories c, restaurant where c.restaurant_id = restaurant.id and c.name_es = 'Complementos' limit 1)
 insert into public.products (
   restaurant_id, category_id, name_tr, name_es, name_en, description_tr, description_es, description_en,
   price, currency, image_url, ingredients, allergens, calories, spice_level,
@@ -973,7 +973,7 @@ where not exists (
     and p.name_es = 'Aros de cebolla'
 );
 with restaurant as (select id from public.restaurants where slug = 'real-kebab-istanbul'),
-category as (select c.id from public.categories c, restaurant where c.restaurant_id = restaurant.id and c.name_es = 'Complementos / Fast Food' limit 1)
+category as (select c.id from public.categories c, restaurant where c.restaurant_id = restaurant.id and c.name_es = 'Complementos' limit 1)
 update public.products p set
   category_id = category.id,
   name_tr = 'Sogan Halkasi',
@@ -1001,7 +1001,7 @@ where p.restaurant_id = restaurant.id
   and p.name_es = 'Aros de cebolla';
 
 with restaurant as (select id from public.restaurants where slug = 'real-kebab-istanbul'),
-category as (select c.id from public.categories c, restaurant where c.restaurant_id = restaurant.id and c.name_es = 'Complementos / Fast Food' limit 1)
+category as (select c.id from public.categories c, restaurant where c.restaurant_id = restaurant.id and c.name_es = 'Complementos' limit 1)
 insert into public.products (
   restaurant_id, category_id, name_tr, name_es, name_en, description_tr, description_es, description_en,
   price, currency, image_url, ingredients, allergens, calories, spice_level,
@@ -1018,7 +1018,7 @@ where not exists (
     and p.name_es = 'Patatas fritas'
 );
 with restaurant as (select id from public.restaurants where slug = 'real-kebab-istanbul'),
-category as (select c.id from public.categories c, restaurant where c.restaurant_id = restaurant.id and c.name_es = 'Complementos / Fast Food' limit 1)
+category as (select c.id from public.categories c, restaurant where c.restaurant_id = restaurant.id and c.name_es = 'Complementos' limit 1)
 update public.products p set
   category_id = category.id,
   name_tr = 'Patates Kizartmasi',
@@ -1046,7 +1046,7 @@ where p.restaurant_id = restaurant.id
   and p.name_es = 'Patatas fritas';
 
 with restaurant as (select id from public.restaurants where slug = 'real-kebab-istanbul'),
-category as (select c.id from public.categories c, restaurant where c.restaurant_id = restaurant.id and c.name_es = 'Complementos / Fast Food' limit 1)
+category as (select c.id from public.categories c, restaurant where c.restaurant_id = restaurant.id and c.name_es = 'Complementos' limit 1)
 insert into public.products (
   restaurant_id, category_id, name_tr, name_es, name_en, description_tr, description_es, description_en,
   price, currency, image_url, ingredients, allergens, calories, spice_level,
@@ -1063,7 +1063,7 @@ where not exists (
     and p.name_es = 'Patatas deluxe'
 );
 with restaurant as (select id from public.restaurants where slug = 'real-kebab-istanbul'),
-category as (select c.id from public.categories c, restaurant where c.restaurant_id = restaurant.id and c.name_es = 'Complementos / Fast Food' limit 1)
+category as (select c.id from public.categories c, restaurant where c.restaurant_id = restaurant.id and c.name_es = 'Complementos' limit 1)
 update public.products p set
   category_id = category.id,
   name_tr = 'Deluxe Patates',
@@ -1091,7 +1091,7 @@ where p.restaurant_id = restaurant.id
   and p.name_es = 'Patatas deluxe';
 
 with restaurant as (select id from public.restaurants where slug = 'real-kebab-istanbul'),
-category as (select c.id from public.categories c, restaurant where c.restaurant_id = restaurant.id and c.name_es = 'Complementos / Fast Food' limit 1)
+category as (select c.id from public.categories c, restaurant where c.restaurant_id = restaurant.id and c.name_es = 'Complementos' limit 1)
 insert into public.products (
   restaurant_id, category_id, name_tr, name_es, name_en, description_tr, description_es, description_en,
   price, currency, image_url, ingredients, allergens, calories, spice_level,
@@ -1108,7 +1108,7 @@ where not exists (
     and p.name_es = 'Papas al horno'
 );
 with restaurant as (select id from public.restaurants where slug = 'real-kebab-istanbul'),
-category as (select c.id from public.categories c, restaurant where c.restaurant_id = restaurant.id and c.name_es = 'Complementos / Fast Food' limit 1)
+category as (select c.id from public.categories c, restaurant where c.restaurant_id = restaurant.id and c.name_es = 'Complementos' limit 1)
 update public.products p set
   category_id = category.id,
   name_tr = 'Firin Patates',

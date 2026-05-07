@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import Icon from "./Icon.jsx";
 import ProductCard from "./ProductCard.jsx";
 import ProductDetailSheet from "./ProductDetailSheet.jsx";
+import GuestActions from "./GuestActions.jsx";
 import VenueProfile from "./VenueProfile.jsx";
 import { PLACEHOLDER_IMAGES } from "../config/appConfig.js";
 import { localized } from "../utils/localization.js";
@@ -65,7 +66,7 @@ function sortProducts(a, b) {
 
 function getProductGroup(product, language) {
   if (product.id.includes("menu")) {
-    return language === "tr" ? "Menüler" : language === "en" ? "Menus" : "Menús";
+    return language === "tr" ? "Menuler" : "Menus";
   }
 
   if (product.category_id === "bebidas") {
@@ -324,6 +325,7 @@ export default function MenuSection({
       </div>
 
       <VenueProfile restaurant={restaurant} links={links} language={language} copy={copy} />
+      <GuestActions copy={copy} gameEnabled={gameEnabled} />
 
       {favoriteProducts.length > 0 ? (
         <div className="recommendation-strip">

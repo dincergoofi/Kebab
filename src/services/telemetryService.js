@@ -1,5 +1,18 @@
 import { hasSupabaseConfig, supabase } from "./supabaseClient.js";
 
+function isRecoverableSupabaseError(error) {
+  const code = error?.code;
+  const message = `${error?.message || ""} ${error?.details || ""}`.toLowerCase();
+
+  return (
+    code === "PGRST202" ||
+    message.includes("could not find the function") ||
+    message.includes("schema cache") ||
+    message.includes("failed to fetch") ||
+    message.includes("networkerror")
+  );
+}
+
 export async function createGuestSession({ restaurantSlug, tableCode, language }) {
   if (!hasSupabaseConfig) {
     return `demo-session-${Date.now()}`;
@@ -13,6 +26,10 @@ export async function createGuestSession({ restaurantSlug, tableCode, language }
   });
 
   if (error) {
+    if (isRecoverableSupabaseError(error)) {
+      return `demo-session-${Date.now()}`;
+    }
+
     throw error;
   }
 

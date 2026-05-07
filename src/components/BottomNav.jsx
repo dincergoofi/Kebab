@@ -26,7 +26,7 @@ export default function BottomNav({ copy, gameEnabled, activeId, onNavigate }) {
           aria-current={activeId === item.id ? "page" : undefined}
         >
           <span>
-            <Icon name={NAV_ICON_MAP[item.id]} size={16} />
+            <Icon name={NAV_ICON_MAP[item.id]} size={22} />
           </span>
           {item.label}
         </button>

@@ -114,7 +114,7 @@ const RAW_DEMO_EXPERIENCE = {
   ],
   categories: [
     { id: "principales", name: { tr: "Ana Lezzetler", es: "Principales", en: "Mains" }, order_index: 10 },
-    { id: "fast-food", name: { tr: "Tamamlayicilar / Fast Food", es: "Complementos / Fast Food", en: "Sides / Fast Food" }, order_index: 20 },
+    { id: "fast-food", name: { tr: "Yan Lezzetler", es: "Complementos", en: "Sides" }, order_index: 20 },
     { id: "especiales", name: { tr: "Ozel Lezzetler", es: "Especiales", en: "Specials" }, order_index: 30 },
     { id: "postres", name: { tr: "Tatlilar", es: "Postres", en: "Desserts" }, order_index: 40 },
     { id: "bebidas", name: { tr: "Icecekler", es: "Bebidas", en: "Drinks" }, order_index: 50 }  ],

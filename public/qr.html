@@ -250,7 +250,7 @@
         <div class="controls">
           <label>
             Canlı base URL
-            <input id="baseUrl" value="https://real-kebab-istanbul.vercel.app" />
+            <input id="baseUrl" placeholder="https://your-domain.example" />
           </label>
           <label>
             Restoran slug
@@ -308,6 +308,14 @@
         labels: document.getElementById("labels")
       };
       const sheet = document.getElementById("sheet");
+
+      function defaultBaseUrl() {
+        if (window.location.protocol === "http:" || window.location.protocol === "https:") {
+          return window.location.origin;
+        }
+
+        return "https://your-domain.example";
+      }
 
       function cleanBaseUrl(value) {
         return value.trim().replace(/\/+$/, "");
@@ -610,6 +618,7 @@
       document.getElementById("render").addEventListener("click", renderCards);
       document.getElementById("print").addEventListener("click", () => window.print());
 
+      fields.baseUrl.value = cleanBaseUrl(fields.baseUrl.value) || defaultBaseUrl();
       renderCards();
     </script>
   </body>

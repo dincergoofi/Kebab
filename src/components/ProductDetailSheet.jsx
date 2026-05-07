@@ -20,7 +20,10 @@ function detailLabels(language) {
     return {
       orderNow: "Siparis kanallarina git",
       share: "Urunu paylas",
-      shared: "Paylasim hazir"
+      shared: "Paylasim hazir",
+      allergenTitle: "Alerjen bilgisi",
+      allergenEmpty: "Bu urun icin isaretli alerjen yok.",
+      allergenNote: "Gida alerjiniz varsa siparis vermeden once personelden teyit isteyin. Mutfakta capraz temas olabilir."
     };
   }
 
@@ -28,14 +31,20 @@ function detailLabels(language) {
     return {
       orderNow: "Open order channels",
       share: "Share item",
-      shared: "Share ready"
+      shared: "Share ready",
+      allergenTitle: "Allergen information",
+      allergenEmpty: "No marked allergens for this item.",
+      allergenNote: "If you have a food allergy, please confirm with staff before ordering. Cross-contact may occur in the kitchen."
     };
   }
 
   return {
     orderNow: "Abrir canales de pedido",
     share: "Compartir plato",
-    shared: "Listo para compartir"
+    shared: "Listo para compartir",
+    allergenTitle: "Informacion sobre alergenos",
+    allergenEmpty: "No hay alergenos marcados para este producto.",
+    allergenNote: "Si tienes una alergia alimentaria, confirma con el personal antes de pedir. Puede haber contacto cruzado en cocina."
   };
 }
 
@@ -125,7 +134,6 @@ export default function ProductDetailSheet({
               {copy.spiceLabel}
               <SpiceMeter level={product.spice_level} />
             </span>
-            <span>{product.allergens?.length ? `${copy.allergens}: ${product.allergens.join(", ")}` : copy.noAllergens}</span>
           </div>
 
           {ingredients.length ? (
@@ -134,6 +142,20 @@ export default function ProductDetailSheet({
               <p>{ingredients.join(", ")}</p>
             </div>
           ) : null}
+
+          <div className="sheet-section allergen-section">
+            <strong>{labels.allergenTitle}</strong>
+            {product.allergens?.length ? (
+              <div className="allergen-chip-list" aria-label={copy.allergens}>
+                {product.allergens.map((allergen) => (
+                  <span key={allergen}>{allergen}</span>
+                ))}
+              </div>
+            ) : (
+              <p>{labels.allergenEmpty}</p>
+            )}
+            <small>{labels.allergenNote}</small>
+          </div>
 
           <div className="sheet-actions-row">
             <button

@@ -11,8 +11,15 @@ createRoot(document.getElementById("root")).render(
 
 if ("serviceWorker" in navigator && import.meta.env.PROD) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js").catch(() => {
-      // The menu still works if offline support cannot be registered.
-    });
+    navigator.serviceWorker
+      .register("/sw.js")
+      .then((registration) => {
+        registration.update().catch(() => {
+          // The current page still works if the update check fails.
+        });
+      })
+      .catch(() => {
+        // The menu still works if offline support cannot be registered.
+      });
   });
 }

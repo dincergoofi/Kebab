@@ -206,7 +206,10 @@ body {
 .menu-first {
   background:
     linear-gradient(180deg, #060909 0%, #0d0f0f 45%, #070909 100%);
-  padding: 1rem 0 2rem;
+  margin-top: -0.5rem;
+  padding: 1.35rem 0 2rem;
+  position: relative;
+  z-index: 2;
 }
 
 .featured-hero-card,
@@ -402,6 +405,10 @@ body {
 
 .category-tile .category-copy {
   z-index: 2;
+}
+
+.category-tile strong {
+  overflow-wrap: anywhere;
 }
 
 .menu-game-card {
@@ -2477,8 +2484,8 @@ body {
   font-weight: 800;
   gap: 0.35rem;
   justify-content: center;
-  min-height: 3.3rem;
-  padding: 0.35rem 0.15rem;
+  min-height: 3.7rem;
+  padding: 0.42rem 0.18rem;
   transition: transform 160ms ease, color 180ms ease, background 180ms ease;
 }
 
@@ -2493,19 +2500,35 @@ body {
   border-radius: 8px;
   color: inherit;
   display: inline-flex;
-  height: 1.9rem;
+  height: 2.3rem;
   justify-content: center;
-  width: 1.9rem;
+  transition: background 180ms ease, border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+  width: 2.3rem;
+}
+
+.bottom-nav button:focus-visible {
+  outline: none;
 }
 
 .bottom-nav button.is-active {
-  background: rgba(245, 197, 66, 0.08);
-  color: #f5c542;
+  background: rgba(245, 197, 66, 0.16);
+  box-shadow: inset 0 0 0 1px rgba(245, 197, 66, 0.24);
+  color: #ffffff;
+  transform: translateY(-1px);
 }
 
 .bottom-nav button.is-active span {
-  background: rgba(245, 197, 66, 0.16);
-  border-color: rgba(245, 197, 66, 0.24);
+  background: rgba(245, 197, 66, 0.24);
+  border-color: rgba(245, 197, 66, 0.38);
+  box-shadow: 0 10px 18px rgba(245, 197, 66, 0.16);
+  color: #f5c542;
+  transform: scale(1.04);
+}
+
+.bottom-nav button:focus-visible,
+.bottom-nav button:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
 }
 
 @media (max-width: 560px) {
@@ -2542,7 +2565,7 @@ body {
   justify-content: center;
   padding: 1rem 0.8rem;
   position: fixed;
-  z-index: 50;
+  z-index: 90;
 }
 
 .detail-sheet {
@@ -2875,10 +2898,16 @@ body {
 .delivery-link-glovo .delivery-link-top span,
 .delivery-link-whatsapp .delivery-link-top span,
 .delivery-link-ubereats .delivery-link-top span,
-.delivery-link-maps .delivery-link-top span {
+.delivery-link-maps .delivery-link-top span,
+.delivery-link-website .delivery-link-top span {
   background: rgba(245, 197, 66, 0.16);
   border: 1px solid rgba(245, 197, 66, 0.18);
   color: #f5c542;
+}
+
+.delivery-grid.luxe .delivery-phone-card {
+  grid-column: span 2;
+  min-height: 9rem;
 }
 
 .stack-hud {
@@ -3848,6 +3877,7 @@ img {
   flex-wrap: wrap;
   gap: 0.45rem;
   justify-content: flex-end;
+  margin-top: 0.9rem;
 }
 
 .menu-shortcuts a {
@@ -5042,7 +5072,7 @@ h3 {
   inset: 0;
   padding: 1rem;
   position: fixed;
-  z-index: 60;
+  z-index: 90;
 }
 
 .detail-sheet {
@@ -5058,6 +5088,10 @@ h3 {
   overflow: hidden;
   position: relative;
   width: 100%;
+}
+
+.detail-sheet .sheet-body {
+  padding-bottom: calc(1rem + env(safe-area-inset-bottom));
 }
 
 .sheet-close {
@@ -5135,6 +5169,40 @@ h3 {
   display: grid;
   gap: 0.55rem;
   padding-top: 1rem;
+}
+
+.allergen-section {
+  background: color-mix(in srgb, var(--yellow) 10%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--yellow) 42%, var(--line));
+  border-radius: 8px;
+  padding: 0.85rem;
+}
+
+.allergen-section strong {
+  color: var(--ink);
+}
+
+.allergen-section small {
+  color: var(--muted);
+  display: block;
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.allergen-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.allergen-chip-list span {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink);
+  font-size: 0.78rem;
+  font-weight: 850;
+  padding: 0.34rem 0.6rem;
 }
 
 .favorite-wide {
@@ -5730,11 +5798,18 @@ h3 {
 }
 
 .venue-status {
-  color: var(--green);
   font-size: 0.78rem;
   font-weight: 900;
   margin: 0 0 0.25rem;
   text-transform: uppercase;
+}
+
+.venue-status.is-open {
+  color: var(--green);
+}
+
+.venue-status.is-closed {
+  color: var(--red);
 }
 
 .venue-copy h2 {
@@ -5877,6 +5952,9 @@ h3 {
 .category-tile strong {
   font-size: 1rem;
   line-height: 1.05;
+  max-width: 11ch;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
 }
 
 .category-tile small {
@@ -6285,9 +6363,13 @@ h3 {
 .category-tile strong {
   color: #ffffff;
   font-family: Impact, "Arial Narrow", "Franklin Gothic Condensed", sans-serif;
-  font-size: 1.45rem;
+  font-size: 1.24rem;
   letter-spacing: 0.03rem;
+  line-height: 0.98;
+  max-width: 10ch;
+  overflow-wrap: anywhere;
   text-transform: uppercase;
+  text-wrap: balance;
 }
 
 .category-tile small {
@@ -6503,8 +6585,12 @@ h3 {
   width: 4.7rem;
 }
 
-.venue-status {
-  color: var(--yellow);
+.venue-status.is-open {
+  color: var(--green);
+}
+
+.venue-status.is-closed {
+  color: var(--red);
 }
 
 .venue-copy h2 {
@@ -6712,6 +6798,10 @@ h3 {
     margin-top: 0.5rem;
   }
 
+  .delivery-grid.luxe .delivery-phone-card {
+    grid-column: 1 / -1;
+  }
+
   .brand-home h1 strong {
     font-size: 1.22rem;
     letter-spacing: 0.32rem;
@@ -6762,6 +6852,11 @@ h3 {
 
   .category-tile:first-child {
     min-height: 7.2rem;
+  }
+
+  .category-tile strong {
+    font-size: 1.08rem;
+    max-width: 9ch;
   }
 
   .venue-profile {

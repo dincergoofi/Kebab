@@ -1,10 +1,8 @@
-const CACHE_NAME = "real-kebab-menu-v3";
+const CACHE_NAME = "real-kebab-menu-v4";
 
 const CORE_ASSETS = [
-  "/",
   "/index.html",
   "/manifest.webmanifest",
-  "/real-kebab-istanbul/masa-1",
   "/brand/opening-poster.png",
   "/brand/real-istanbul-hero-clean.png",
   "/brand/real-istanbul-hero-kebab.png",
@@ -32,6 +30,15 @@ const CORE_ASSETS = [
   "/placeholders/burnt-doner.svg"
 ];
 
+function isStaticAsset(request) {
+  const url = new URL(request.url);
+  return (
+    url.origin === self.location.origin &&
+    (url.pathname.startsWith("/assets/") ||
+      /\.(?:js|css|png|jpg|jpeg|webp|svg|ico|json|webmanifest)$/i.test(url.pathname))
+  );
+}
+
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches
@@ -57,9 +64,35 @@ self.addEventListener("fetch", (event) => {
 
   if (event.request.mode === "navigate") {
     event.respondWith(
-      fetch(event.request).catch(async () => {
-        return (await caches.match(event.request)) || caches.match("/index.html");
-      })
+      (async () => {
+        try {
+          const response = await fetch(event.request);
+          const cache = await caches.open(CACHE_NAME);
+          cache.put("/index.html", response.clone());
+          return response;
+        } catch {
+          return (await caches.match("/index.html")) || Response.error();
+        }
+      })()
+    );
+    return;
+  }
+
+  if (isStaticAsset(event.request)) {
+    event.respondWith(
+      (async () => {
+        const cache = await caches.open(CACHE_NAME);
+
+        try {
+          const response = await fetch(event.request);
+          if (response.ok) {
+            cache.put(event.request, response.clone());
+          }
+          return response;
+        } catch {
+          return (await caches.match(event.request)) || Response.error();
+        }
+      })()
     );
     return;
   }

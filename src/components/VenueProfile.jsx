@@ -1,39 +1,54 @@
 import { PLACEHOLDER_IMAGES } from "../config/appConfig.js";
 import { localized } from "../utils/localization.js";
+import { getOpenStatus } from "../utils/hours.js";
+import { repairMojibake } from "../utils/text.js";
 
 export default function VenueProfile({ restaurant, links, language, copy }) {
-  const phone = restaurant.phone || restaurant.whatsapp_number || "";
+  const phone = repairMojibake(restaurant.phone || restaurant.whatsapp_number || "");
+  const venueName = repairMojibake(restaurant.name || "");
+  const hours = repairMojibake(restaurant.hours || "");
+  const address = repairMojibake(restaurant.address || "");
+  const customLink = repairMojibake(restaurant.custom_link || "");
   const coverImage = restaurant.cover_image_url || PLACEHOLDER_IMAGES.openingPoster;
   const logoImage = restaurant.logo_image_url || PLACEHOLDER_IMAGES.sign;
   const tagline = localized(restaurant, "tagline", language);
   const mapLink = links?.find((link) => link.kind === "maps");
+  const openStatus = getOpenStatus(restaurant.hours);
+  const statusLabel =
+    openStatus === "open" ? copy.openNow :
+    openStatus === "closed" ? copy.closedNow :
+    null;
+  const statusClass =
+    openStatus === "open" ? "venue-status is-open" :
+    openStatus === "closed" ? "venue-status is-closed" :
+    "venue-status";
 
   return (
-    <section className="venue-profile" aria-label={restaurant.name}>
+    <section className="venue-profile" aria-label={venueName}>
       <div className="venue-cover">
         <img src={coverImage} alt="" />
       </div>
 
       <div className="venue-panel">
-        <img className="venue-logo" src={logoImage} alt={restaurant.name} />
+        <img className="venue-logo" src={logoImage} alt={venueName} />
 
         <div className="venue-copy">
-          <p className="venue-status">{copy.openNow}</p>
-          <h2>{restaurant.name}</h2>
+          {statusLabel ? <p className={statusClass}>{statusLabel}</p> : null}
+          <h2>{venueName}</h2>
           {tagline ? <p>{tagline}</p> : null}
 
           <div className="venue-info">
-            {restaurant.hours ? (
+            {hours ? (
               <span>
                 <small>{copy.hoursLabel}</small>
-                <strong>{restaurant.hours}</strong>
+                <strong>{hours}</strong>
               </span>
             ) : null}
 
-            {restaurant.address ? (
+            {address ? (
               <span>
                 <small>{copy.addressLabel}</small>
-                <strong>{restaurant.address}</strong>
+                <strong>{address}</strong>
               </span>
             ) : null}
 
@@ -44,10 +59,10 @@ export default function VenueProfile({ restaurant, links, language, copy }) {
               </span>
             ) : null}
 
-            {restaurant.custom_link ? (
+            {customLink ? (
               <span>
                 <small>{copy.customLinkLabel}</small>
-                <strong>{restaurant.custom_link}</strong>
+                <strong>{customLink}</strong>
               </span>
             ) : null}
           </div>

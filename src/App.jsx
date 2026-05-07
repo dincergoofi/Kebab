@@ -343,7 +343,7 @@ export default function App() {
     return (
       <div className="app-shell app-shell-admin">
         <Suspense fallback={<AdminFallback />}>
-          <AdminPanel restaurantSlug={entryPoint.restaurantSlug} language={language} brandRestaurant={experience?.restaurant} />
+          <AdminPanel restaurantSlug={entryPoint.restaurantSlug} brandRestaurant={experience?.restaurant} />
         </Suspense>
       </div>
     );

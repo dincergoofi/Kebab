@@ -1,8 +1,9 @@
 import { demoExperience } from "../data/demoExperience.js";
 import { hasSupabaseConfig, supabase } from "./supabaseClient.js";
+import { repairDeep } from "../utils/text.js";
 
 function mapCategory(row) {
-  return {
+  return repairDeep({
     id: row.id,
     name: {
       tr: row.name_tr,
@@ -10,11 +11,11 @@ function mapCategory(row) {
       en: row.name_en
     },
     order_index: row.order_index
-  };
+  });
 }
 
 function mapProduct(row) {
-  return {
+  return repairDeep({
     id: row.id,
     category_id: row.category_id,
     name: {
@@ -44,17 +45,28 @@ function mapProduct(row) {
     sales_priority: row.sales_priority,
     order_index: row.order_index,
     is_available: row.is_available
-  };
+  });
 }
 
 function mapLink(row) {
-  return {
+  return repairDeep({
     id: row.id,
     kind: row.kind,
     label: row.label,
     url: row.url,
     order_index: row.order_index
-  };
+  });
+}
+
+function mapRestaurant(row) {
+  return repairDeep({
+    ...row,
+    tagline: {
+      tr: row.tagline_tr || "",
+      es: row.tagline_es || "",
+      en: row.tagline_en || ""
+    }
+  });
 }
 
 function readDemoLeaderboard() {
@@ -74,6 +86,60 @@ function writeDemoLeaderboard(entries) {
   }
 }
 
+function loadDemoExperience() {
+  return {
+    ...demoExperience,
+    leaderboard: [...readDemoLeaderboard(), ...demoExperience.leaderboard]
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 5)
+  };
+}
+
+function loadDemoLeaderboard() {
+  return [...readDemoLeaderboard(), ...demoExperience.leaderboard]
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 5);
+}
+
+function createDemoGameResult({ playerName, score }) {
+  const entry = {
+    id: `demo-game-${Date.now()}`,
+    player_name: playerName,
+    score,
+    created_at: new Date().toISOString()
+  };
+  const nextLeaderboard = [entry, ...readDemoLeaderboard()]
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 5);
+  writeDemoLeaderboard(nextLeaderboard);
+
+  return {
+    leaderboard_id: entry.id,
+    promo_code: null
+  };
+}
+
+function isRecoverableSupabaseError(error) {
+  const code = error?.code;
+  const message = `${error?.message || ""} ${error?.details || ""}`.toLowerCase();
+
+  return (
+    code === "PGRST202" ||
+    code === "PGRST205" ||
+    message.includes("could not find the table") ||
+    message.includes("could not find the function") ||
+    message.includes("schema cache") ||
+    message.includes("failed to fetch") ||
+    message.includes("networkerror")
+  );
+}
+
+function warnDemoFallback(scope, error) {
+  if (import.meta.env.DEV) {
+    console.warn(`[Real Kebab] Supabase ${scope} failed; using demo fallback.`, error);
+  }
+}
+
 async function resolveRestaurantId(restaurantSlug) {
   const { data, error } = await supabase
     .from("restaurants")
@@ -90,12 +156,7 @@ async function resolveRestaurantId(restaurantSlug) {
 
 export async function loadExperience(restaurantSlug) {
   if (!hasSupabaseConfig) {
-    return {
-      ...demoExperience,
-      leaderboard: [...readDemoLeaderboard(), ...demoExperience.leaderboard]
-        .sort((a, b) => b.score - a.score)
-        .slice(0, 5)
-    };
+    return loadDemoExperience();
   }
 
   const { data: restaurant, error: restaurantError } = await supabase
@@ -105,6 +166,11 @@ export async function loadExperience(restaurantSlug) {
     .single();
 
   if (restaurantError) {
+    if (isRecoverableSupabaseError(restaurantError)) {
+      warnDemoFallback("experience load", restaurantError);
+      return loadDemoExperience();
+    }
+
     throw restaurantError;
   }
 
@@ -144,12 +210,19 @@ export async function loadExperience(restaurantSlug) {
   ] = await Promise.all(requests);
 
   if (categoriesError || productsError || leaderboardError || linksError) {
-    throw categoriesError || productsError || leaderboardError || linksError;
+    const firstError = categoriesError || productsError || leaderboardError || linksError;
+
+    if (isRecoverableSupabaseError(firstError)) {
+      warnDemoFallback("related data load", firstError);
+      return loadDemoExperience();
+    }
+
+    throw firstError;
   }
 
   return {
     source: "supabase",
-    restaurant,
+    restaurant: mapRestaurant(restaurant),
     categories: categories.map(mapCategory),
     products: products.map(mapProduct),
     links: links.map(mapLink),
@@ -159,12 +232,21 @@ export async function loadExperience(restaurantSlug) {
 
 export async function loadLeaderboard(restaurantSlug) {
   if (!hasSupabaseConfig) {
-    return [...readDemoLeaderboard(), ...demoExperience.leaderboard]
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 5);
+    return loadDemoLeaderboard();
   }
 
-  const restaurantId = await resolveRestaurantId(restaurantSlug);
+  let restaurantId;
+  try {
+    restaurantId = await resolveRestaurantId(restaurantSlug);
+  } catch (error) {
+    if (isRecoverableSupabaseError(error)) {
+      warnDemoFallback("leaderboard restaurant lookup", error);
+      return loadDemoLeaderboard();
+    }
+
+    throw error;
+  }
+
   const { data, error } = await supabase
     .from("game_leaderboard")
     .select("id, player_name, score, created_at")
@@ -174,6 +256,11 @@ export async function loadLeaderboard(restaurantSlug) {
     .limit(5);
 
   if (error) {
+    if (isRecoverableSupabaseError(error)) {
+      warnDemoFallback("leaderboard load", error);
+      return loadDemoLeaderboard();
+    }
+
     throw error;
   }
 
@@ -197,6 +284,11 @@ export async function submitFeedback({ restaurantSlug, tableCode, stars, comment
   });
 
   if (error) {
+    if (isRecoverableSupabaseError(error)) {
+      warnDemoFallback("feedback submit", error);
+      return { id: `demo-feedback-${Date.now()}` };
+    }
+
     throw error;
   }
 
@@ -205,21 +297,7 @@ export async function submitFeedback({ restaurantSlug, tableCode, stars, comment
 
 export async function submitGameResult({ restaurantSlug, tableCode, playerName, score }) {
   if (!hasSupabaseConfig) {
-    const entry = {
-      id: `demo-game-${Date.now()}`,
-      player_name: playerName,
-      score,
-      created_at: new Date().toISOString()
-    };
-    const nextLeaderboard = [entry, ...readDemoLeaderboard()]
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 5);
-    writeDemoLeaderboard(nextLeaderboard);
-
-    return {
-      leaderboard_id: entry.id,
-      promo_code: null
-    };
+    return createDemoGameResult({ playerName, score });
   }
 
   const { data, error } = await supabase.rpc("create_game_result", {
@@ -230,6 +308,11 @@ export async function submitGameResult({ restaurantSlug, tableCode, playerName, 
   });
 
   if (error) {
+    if (isRecoverableSupabaseError(error)) {
+      warnDemoFallback("game result submit", error);
+      return createDemoGameResult({ playerName, score });
+    }
+
     throw error;
   }
 
