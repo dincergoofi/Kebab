@@ -236,17 +236,33 @@ function createImageBank() {
 
 function drawPhotoToken(ctx, item, image) {
   const radius = item.size * 0.52;
-  const ringRadius = radius + item.size * 0.11;
+  const ringRadius = radius + item.size * 0.14;
+  const lift = item.bad ? item.size * 0.02 : item.size * 0.05;
+  const platterWidth = radius + item.size * 0.1;
+  const platterHeight = radius + item.size * 0.06;
 
   ctx.save();
-  ctx.translate(item.x, item.y);
+  ctx.translate(item.x, item.y - lift);
   ctx.rotate(item.rotation);
-  ctx.shadowColor = item.glow;
-  ctx.shadowBlur = item.bad ? 24 : 34;
 
-  const ring = ctx.createRadialGradient(0, 0, radius * 0.35, 0, 0, ringRadius);
-  ring.addColorStop(0, item.bad ? "rgba(255,120,90,0.72)" : `${item.glow}cc`);
-  ring.addColorStop(0.6, item.bad ? "rgba(255,70,45,0.28)" : `${item.glow}55`);
+  ctx.save();
+  ctx.globalAlpha = item.bad ? 0.56 : 0.42;
+  ctx.fillStyle = item.bad ? "rgba(34,8,6,0.96)" : "rgba(6,5,4,0.92)";
+  ctx.shadowColor = item.bad ? "rgba(255,88,54,0.34)" : "rgba(0,0,0,0.34)";
+  ctx.shadowBlur = item.bad ? 22 : 28;
+  ctx.beginPath();
+  ctx.ellipse(0, platterHeight * 1.08, platterWidth * 0.96, platterHeight * 0.34, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+
+  ctx.save();
+  ctx.scale(1.02, 0.92);
+  ctx.shadowColor = item.glow;
+  ctx.shadowBlur = item.bad ? 28 : 38;
+
+  const ring = ctx.createRadialGradient(0, -radius * 0.08, radius * 0.24, 0, 0, ringRadius);
+  ring.addColorStop(0, item.bad ? "rgba(255,120,90,0.7)" : `${item.glow}d8`);
+  ring.addColorStop(0.55, item.bad ? "rgba(255,70,45,0.26)" : `${item.glow}5c`);
   ring.addColorStop(1, "rgba(0,0,0,0)");
   ctx.fillStyle = ring;
   ctx.beginPath();
@@ -254,28 +270,49 @@ function drawPhotoToken(ctx, item, image) {
   ctx.fill();
 
   ctx.shadowBlur = 0;
-  ctx.fillStyle = "#120d09";
+  const underside = ctx.createLinearGradient(0, -platterHeight, 0, platterHeight);
+  underside.addColorStop(0, item.bad ? "#351610" : "#191210");
+  underside.addColorStop(1, item.bad ? "#0f0907" : "#060505");
+  ctx.fillStyle = underside;
   ctx.beginPath();
-  ctx.arc(0, 0, radius + 6, 0, Math.PI * 2);
+  ctx.ellipse(0, platterHeight * 0.12, platterWidth + 8, platterHeight + 8, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  const platter = ctx.createLinearGradient(0, -platterHeight, 0, platterHeight);
+  if (item.bad) {
+    platter.addColorStop(0, "#6d2618");
+    platter.addColorStop(0.5, "#35110d");
+    platter.addColorStop(1, "#120707");
+  } else {
+    platter.addColorStop(0, "#fff5ea");
+    platter.addColorStop(0.45, "#f4d7b0");
+    platter.addColorStop(1, "#7b4b2d");
+  }
+  ctx.fillStyle = platter;
+  ctx.beginPath();
+  ctx.ellipse(0, -2, platterWidth, platterHeight, 0, 0, Math.PI * 2);
   ctx.fill();
 
   const border = ctx.createLinearGradient(-radius, -radius, radius, radius);
   border.addColorStop(0, item.accent);
+  border.addColorStop(0.6, "#fff7d1");
   border.addColorStop(1, item.glow);
   ctx.strokeStyle = border;
-  ctx.lineWidth = 4;
+  ctx.lineWidth = item.bad ? 4.5 : 4;
   ctx.beginPath();
-  ctx.arc(0, 0, radius + 2, 0, Math.PI * 2);
+  ctx.ellipse(0, -2, platterWidth - 1.5, platterHeight - 1.5, 0, 0, Math.PI * 2);
   ctx.stroke();
 
   ctx.save();
   ctx.beginPath();
-  ctx.arc(0, 0, radius, 0, Math.PI * 2);
+  ctx.ellipse(0, -radius * 0.04, radius * 0.98, radius * 0.92, 0, 0, Math.PI * 2);
   ctx.closePath();
   ctx.clip();
 
   if (image?.complete) {
-    ctx.drawImage(image, -radius, -radius, radius * 2, radius * 2);
+    ctx.filter = item.bad ? "contrast(1.06) saturate(0.92)" : "contrast(1.05) saturate(1.08)";
+    ctx.drawImage(image, -radius * 1.02, -radius * 0.98, radius * 2.04, radius * 1.98);
+    ctx.filter = "none";
   } else {
     const fallback = ctx.createLinearGradient(-radius, -radius, radius, radius);
     fallback.addColorStop(0, item.accent);
@@ -285,21 +322,26 @@ function drawPhotoToken(ctx, item, image) {
   }
 
   const gloss = ctx.createLinearGradient(0, -radius, 0, radius);
-  gloss.addColorStop(0, "rgba(255,255,255,0.32)");
-  gloss.addColorStop(0.35, "rgba(255,255,255,0.04)");
-  gloss.addColorStop(1, "rgba(0,0,0,0.18)");
+  gloss.addColorStop(0, "rgba(255,255,255,0.3)");
+  gloss.addColorStop(0.33, "rgba(255,255,255,0.05)");
+  gloss.addColorStop(1, "rgba(0,0,0,0.24)");
   ctx.fillStyle = gloss;
   ctx.fillRect(-radius, -radius, radius * 2, radius * 2);
-
   ctx.restore();
+
+  ctx.fillStyle = "rgba(255,255,255,0.2)";
+  ctx.beginPath();
+  ctx.ellipse(-radius * 0.22, -radius * 0.34, radius * 0.42, radius * 0.16, -0.3, 0, Math.PI * 2);
+  ctx.fill();
 
   ctx.globalAlpha = 0.66;
   ctx.strokeStyle = "rgba(255,255,255,0.42)";
   ctx.lineWidth = 2.1;
   ctx.beginPath();
-  ctx.arc(-radius * 0.18, -radius * 0.14, radius * 0.8, Math.PI * 1.05, Math.PI * 1.6);
+  ctx.arc(-radius * 0.2, -radius * 0.18, radius * 0.82, Math.PI * 1.04, Math.PI * 1.62);
   ctx.stroke();
   ctx.globalAlpha = 1;
+  ctx.restore();
   ctx.restore();
 }
 
@@ -613,16 +655,16 @@ class KebabSliceEngine {
     const size = definition.bad ? 72 + Math.random() * 16 : 78 + Math.random() * 22;
     const fromLeft = Math.random() > 0.5;
     const x = clamp(Math.random() * this.width, 80, this.width - 80);
-    const lift = definition.bad ? 8.6 : 9.4;
+    const liftBase = clamp(this.height / 52 + (definition.bad ? 2.4 : 3.4), definition.bad ? 9.8 : 11.4, definition.bad ? 11.2 : 13.2);
 
     return {
       id: uid(),
       ...definition,
       size,
       x,
-      y: this.height + size * 0.55,
+      y: this.height + size * 0.22,
       vx: (fromLeft ? -1 : 1) * (0.7 + Math.random() * 1.2),
-      vy: -(lift + Math.random() * 2.4),
+      vy: -(liftBase + Math.random() * 2.1),
       rotation: (Math.random() - 0.5) * 0.26,
       spin: (Math.random() - 0.5) * 0.02,
       sliced: false
@@ -788,7 +830,7 @@ class KebabSliceEngine {
     ctx.fillStyle = base;
     ctx.fillRect(0, 0, width, height);
 
-    const warmGlow = ctx.createRadialGradient(width * 0.5, height * 0.72, 0, width * 0.5, height * 0.72, width * 0.72);
+    const warmGlow = ctx.createRadialGradient(width * 0.5, height * 0.64, 0, width * 0.5, height * 0.64, width * 0.72);
     warmGlow.addColorStop(0, "rgba(245,197,66,0.16)");
     warmGlow.addColorStop(0.4, "rgba(201,21,27,0.1)");
     warmGlow.addColorStop(1, "rgba(0,0,0,0)");
@@ -841,8 +883,8 @@ class KebabSliceEngine {
     const pulse = 0.18 + Math.sin(now / 530) * 0.08;
     ctx.fillStyle = `rgba(244, 110, 57, ${pulse})`;
     ctx.beginPath();
-    ctx.ellipse(width * 0.2, height * 0.9, 90, 24, 0, 0, Math.PI * 2);
-    ctx.ellipse(width * 0.8, height * 0.9, 100, 26, 0, 0, Math.PI * 2);
+    ctx.ellipse(width * 0.2, height * 0.86, 90, 24, 0, 0, Math.PI * 2);
+    ctx.ellipse(width * 0.8, height * 0.86, 100, 26, 0, 0, Math.PI * 2);
     ctx.fill();
   }
 
@@ -941,7 +983,7 @@ class KebabSliceEngine {
       this.spawnClock -= spawnDelay;
     }
 
-    const gravity = 0.36;
+    const gravity = 0.33;
     this.items = this.items.filter((item) => {
       item.x += item.vx * (delta / 16.67);
       item.y += item.vy * (delta / 16.67);
@@ -1349,7 +1391,7 @@ export default function OrderRushGame({ copy, promoEnabled, scoreTarget = 850, o
           </span>
           <span>
             <small>{copy.livesLabel}</small>
-            <strong>{Array.from({ length: START_LIVES }, (_, index) => (index < lives ? "•" : "◦")).join(" ")}</strong>
+            <strong>{Array.from({ length: START_LIVES }, (_, index) => (index < lives ? "\u2022" : "\u25e6")).join(" ")}</strong>
           </span>
         </div>
 
@@ -1376,7 +1418,7 @@ export default function OrderRushGame({ copy, promoEnabled, scoreTarget = 850, o
         {!isRunning ? (
           <div className="game-overlay slice-overlay slice-start-overlay">
             <strong>{hasFinishedRound ? resultText : copy.gameReadyTitle}</strong>
-            <p>{hasFinishedRound ? `${copy.scoreLabel}: ${score} • ${copy.caughtLabel}: ${slices}` : copy.gameReadyLead}</p>
+            <p>{hasFinishedRound ? `${copy.scoreLabel}: ${score} \u2022 ${copy.caughtLabel}: ${slices}` : copy.gameReadyLead}</p>
 
             <div className="slice-overlay-pills">
               <span>{copy.gameTitle}</span>

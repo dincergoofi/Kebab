@@ -1,4 +1,5 @@
-import { demoExperience } from "../data/demoExperience.js";
+﻿import { demoExperience } from "../data/demoExperience.js";
+import { resolveProductPhoto } from "../data/menuArtwork.js";
 import { hasSupabaseConfig, supabase } from "./supabaseClient.js";
 import { repairDeep } from "../utils/text.js";
 
@@ -30,7 +31,7 @@ function mapProduct(row) {
     },
     price: Number(row.price),
     currency: row.currency,
-    image_url: row.image_url,
+    image_url: resolveProductPhoto(row.id, row.image_url, row),
     ingredients: row.ingredients || {},
     allergens: row.allergens || [],
     calories: row.calories ? Number(row.calories) : null,
@@ -318,3 +319,6 @@ export async function submitGameResult({ restaurantSlug, tableCode, playerName, 
 
   return data?.[0] || { leaderboard_id: null, promo_code: null };
 }
+
+
+

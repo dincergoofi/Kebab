@@ -1,10 +1,11 @@
-import { Suspense, lazy, useEffect, useMemo, useRef, useState } from "react";
+﻿import { Suspense, lazy, useEffect, useMemo, useRef, useState } from "react";
 import AppHeader from "./components/AppHeader.jsx";
 import BottomNav from "./components/BottomNav.jsx";
 import CategoryDrawer from "./components/CategoryDrawer.jsx";
 import DeliveryLinksSection from "./components/DeliveryLinksSection.jsx";
 import InstallPrompt from "./components/InstallPrompt.jsx";
 import MenuSection from "./components/MenuSection.jsx";
+import OpeningIntro from "./components/OpeningIntro.jsx";
 import ReputationSection from "./components/ReputationSection.jsx";
 import WelcomeCover from "./components/WelcomeCover.jsx";
 import { COPY } from "./data/i18n.js";
@@ -57,6 +58,7 @@ function GameFallback({ copy }) {
 
 export default function App() {
   const entryPoint = useMemo(() => parseEntryPoint(window.location.pathname), []);
+  const introStorageKey = `realKebabIntroSeen:${entryPoint.restaurantSlug || "default"}`;
   const { status, experience, language: detectedLanguage, error } = useExperience(entryPoint);
   const [language, setLanguage] = useState(DEFAULT_LANGUAGE);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
@@ -66,6 +68,17 @@ export default function App() {
   const [shouldLoadGame, setShouldLoadGame] = useState(false);
   const [sessionId, setSessionId] = useState(null);
   const [leaderboard, setLeaderboard] = useState([]);
+  const [showOpeningIntro, setShowOpeningIntro] = useState(() => {
+    if (entryPoint.isAdminMode) {
+      return false;
+    }
+
+    try {
+      return forceOpeningIntro || sessionStorage.getItem(introStorageKey) !== "1";
+    } catch {
+      return true;
+    }
+  });
   const [favoriteIds, setFavoriteIds] = useState(() => {
     try {
       return new Set(JSON.parse(localStorage.getItem("realKebabFavorites") || "[]"));
@@ -136,6 +149,10 @@ export default function App() {
   }, [detectedLanguage, entryPoint.tableCode, experience]);
 
   useEffect(() => {
+    if (showOpeningIntro) {
+      return undefined;
+    }
+
     const sectionIds = ["menu", "delivery", "feedback"];
     if (experience?.restaurant?.is_game_enabled !== false) {
       sectionIds.splice(2, 0, "game");
@@ -168,10 +185,10 @@ export default function App() {
     targets.forEach((target) => observer.observe(target));
 
     return () => observer.disconnect();
-  }, [experience]);
+  }, [experience, showOpeningIntro]);
 
   useEffect(() => {
-    if (!experience || experience.restaurant.is_game_enabled === false || shouldLoadGame) {
+    if (showOpeningIntro || !experience || experience.restaurant.is_game_enabled === false || shouldLoadGame) {
       return undefined;
     }
 
@@ -195,7 +212,7 @@ export default function App() {
     observer.observe(target);
 
     return () => observer.disconnect();
-  }, [experience, shouldLoadGame]);
+  }, [experience, shouldLoadGame, showOpeningIntro]);
 
   function handleLanguageChange(nextLanguage) {
     setLanguage(nextLanguage);
@@ -339,6 +356,23 @@ export default function App() {
     });
   }
 
+  function handleIntroComplete() {
+    try {
+      sessionStorage.setItem(introStorageKey, "1");
+    } catch {
+      // Session storage is optional for the intro handoff.
+    }
+
+    setShowOpeningIntro(false);
+    setActiveNavSection("menu");
+    window.scrollTo({ top: 0, behavior: "auto" });
+    trackEvent({
+      sessionId,
+      eventName: "opening_intro_completed",
+      metadata: { restaurantSlug: experience?.restaurant?.slug }
+    });
+  }
+
   if (entryPoint.isAdminMode) {
     return (
       <div className="app-shell app-shell-admin">
@@ -375,129 +409,154 @@ export default function App() {
 
   return (
     <div className="app-shell" style={appThemeVars}>
-      <AppHeader
-        restaurant={experience.restaurant}
-        tableCode={entryPoint.tableCode}
-        language={language}
-        copy={copy}
-        isDemo={experience.source === "demo"}
-        theme={theme}
-        onOpenMenu={() => setIsDrawerOpen(true)}
-        onLanguageChange={handleLanguageChange}
-        onThemeToggle={toggleTheme}
-      />
-
-      <CategoryDrawer
-        isOpen={isDrawerOpen}
-        restaurant={experience.restaurant}
-        categories={experience.categories}
-        products={experience.products}
-        selectedCategoryId={activeCategoryId}
-        language={language}
-        copy={copy}
-        onSelect={(categoryId) => {
-          handleCategoryOpen(categoryId);
-          setIsDrawerOpen(false);
-          scrollToSection("menu");
-        }}
-        onClose={() => setIsDrawerOpen(false)}
-      />
-
-      <main>
-        <WelcomeCover
-          restaurant={experience.restaurant}
-          language={language}
-          copy={copy}
-          onLanguageChange={handleLanguageChange}
-          onOpenMenu={openMenuFromCover}
-        />
-
-        {canInstall ? (
-          <InstallPrompt
-            language={language}
-            onInstall={async () => {
-              const installed = await promptInstall();
-              if (installed) {
-                trackEvent({
-                  sessionId,
-                  eventName: "pwa_installed",
-                  metadata: { restaurantSlug: experience.restaurant.slug }
-                });
-              }
-            }}
-            onDismiss={dismissInstallPrompt}
-          />
-        ) : null}
-
-        <MenuSection
-          restaurant={experience.restaurant}
-          links={experience.links || []}
-          categories={experience.categories}
-          products={experience.products}
-          selectedCategoryId={activeCategoryId}
-          activeCategoryId={activeMenuCategoryId}
-          language={language}
-          copy={copy}
-          gameEnabled={gameEnabled}
-          favoriteIds={favoriteIds}
-          onCategoryChange={handleCategoryChange}
-          onCategoryOpen={handleCategoryOpen}
-          onCategoryClose={handleCategoryClose}
-          onProductView={handleProductView}
-          onFavoriteToggle={handleFavoriteToggle}
-        />
-
-        <DeliveryLinksSection
-          restaurant={experience.restaurant}
-          language={language}
-          onCallOrder={({ phone }) =>
-            trackEvent({
-              sessionId,
-              eventName: "phone_order_clicked",
-              metadata: { phone }
-            })
-          }
-        />
-
-        {experience.restaurant.is_feedback_enabled !== false ? (
-          <ReputationSection
+      {!showOpeningIntro ? (
+        <>
+          <AppHeader
             restaurant={experience.restaurant}
+            tableCode={entryPoint.tableCode}
             language={language}
             copy={copy}
-            onSubmitFeedback={handleFeedbackSubmit}
-            onTrackEvent={(eventName, metadata) => trackEvent({ sessionId, eventName, metadata })}
+            isDemo={experience.source === "demo"}
+            theme={theme}
+            onOpenMenu={() => setIsDrawerOpen(true)}
+            onLanguageChange={handleLanguageChange}
+            onThemeToggle={toggleTheme}
           />
-        ) : null}
 
-        {gameEnabled ? (
-          <section className="game-band" id="game" ref={gameMountRef}>
-            {shouldLoadGame ? (
-              <Suspense fallback={<GameFallback copy={copy} />}>
-                <GameExperience
-                  copy={copy}
-                  restaurant={experience.restaurant}
-                  leaderboard={leaderboard}
-                  language={language}
-                  onStart={() => trackEvent({ sessionId, eventName: "game_started" })}
-                  onFinish={async ({ playerName, score }) => {
-                    const result = await handleGameFinish({ playerName, score });
-                    return result;
-                  }}
-                />
-              </Suspense>
-            ) : (
-              <GameFallback copy={copy} />
-            )}
-          </section>
-        ) : null}
+          <CategoryDrawer
+            isOpen={isDrawerOpen}
+            restaurant={experience.restaurant}
+            categories={experience.categories}
+            products={experience.products}
+            selectedCategoryId={activeCategoryId}
+            language={language}
+            copy={copy}
+            onSelect={(categoryId) => {
+              handleCategoryOpen(categoryId);
+              setIsDrawerOpen(false);
+              scrollToSection("menu");
+            }}
+            onClose={() => setIsDrawerOpen(false)}
+          />
+        </>
+      ) : null}
+
+      <main>
+        {showOpeningIntro ? (
+          <OpeningIntro
+            restaurant={experience.restaurant}
+            products={experience.products}
+            language={language}
+            onComplete={handleIntroComplete}
+          />
+        ) : (
+          <>
+            <WelcomeCover
+              restaurant={experience.restaurant}
+              products={experience.products}
+              language={language}
+              copy={copy}
+              onLanguageChange={handleLanguageChange}
+              onOpenMenu={openMenuFromCover}
+            />
+
+            {canInstall ? (
+              <InstallPrompt
+                language={language}
+                onInstall={async () => {
+                  const installed = await promptInstall();
+                  if (installed) {
+                    trackEvent({
+                      sessionId,
+                      eventName: "pwa_installed",
+                      metadata: { restaurantSlug: experience.restaurant.slug }
+                    });
+                  }
+                }}
+                onDismiss={dismissInstallPrompt}
+              />
+            ) : null}
+
+            <MenuSection
+              restaurant={experience.restaurant}
+              links={experience.links || []}
+              categories={experience.categories}
+              products={experience.products}
+              selectedCategoryId={activeCategoryId}
+              activeCategoryId={activeMenuCategoryId}
+              language={language}
+              copy={copy}
+              gameEnabled={gameEnabled}
+              favoriteIds={favoriteIds}
+              onCategoryChange={handleCategoryChange}
+              onCategoryOpen={handleCategoryOpen}
+              onCategoryClose={handleCategoryClose}
+              onProductView={handleProductView}
+              onFavoriteToggle={handleFavoriteToggle}
+            />
+
+            <DeliveryLinksSection
+              restaurant={experience.restaurant}
+              links={experience.links || []}
+              language={language}
+              onCallOrder={({ phone }) =>
+                trackEvent({
+                  sessionId,
+                  eventName: "phone_order_clicked",
+                  metadata: { phone }
+                })
+              }
+            />
+
+            {experience.restaurant.is_feedback_enabled !== false ? (
+              <ReputationSection
+                restaurant={experience.restaurant}
+                language={language}
+                copy={copy}
+                onSubmitFeedback={handleFeedbackSubmit}
+                onTrackEvent={(eventName, metadata) => trackEvent({ sessionId, eventName, metadata })}
+              />
+            ) : null}
+
+            {gameEnabled ? (
+              <section className="game-band" id="game" ref={gameMountRef}>
+                {shouldLoadGame ? (
+                  <Suspense fallback={<GameFallback copy={copy} />}>
+                    <GameExperience
+                      copy={copy}
+                      restaurant={experience.restaurant}
+                      leaderboard={leaderboard}
+                      language={language}
+                      onStart={() => trackEvent({ sessionId, eventName: "game_started" })}
+                      onFinish={async ({ playerName, score }) => {
+                        const result = await handleGameFinish({ playerName, score });
+                        return result;
+                      }}
+                    />
+                  </Suspense>
+                ) : (
+                  <GameFallback copy={copy} />
+                )}
+              </section>
+            ) : null}
+          </>
+        )}
       </main>
 
-      <BottomNav
-        copy={copy}
-        gameEnabled={gameEnabled}
-        activeId={activeNavSection}
-        onNavigate={scrollToSection}
-      />
+      {!showOpeningIntro ? (
+        <BottomNav
+          copy={copy}
+          gameEnabled={gameEnabled}
+          activeId={activeNavSection}
+          onNavigate={scrollToSection}
+        />
+      ) : null}
     </div>
   );
 }
+
+
+
+
+
+

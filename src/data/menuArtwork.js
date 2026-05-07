@@ -1,3 +1,5 @@
+﻿import { PLACEHOLDER_IMAGES } from "../config/appConfig.js";
+
 const PRODUCT_KINDS = {
   "carne-con-arroz": "rice",
   "patatas-con-carne": "fries-meat",
@@ -6,7 +8,7 @@ const PRODUCT_KINDS = {
   "plato-kebab": "plate",
   "kebab-pan": "sandwich",
   "kebab-rollo": "wrap",
-  "lahmacun": "pizza",
+  lahmacun: "pizza",
   "lahmacun-menu": "pizza-menu",
   "kebab-pan-menu": "sandwich-menu",
   "kebab-rollo-menu": "wrap-menu",
@@ -38,51 +40,171 @@ const CATEGORY_PALETTES = {
 };
 
 const PHOTO_LIBRARY = {
-  hero: "/brand/real-istanbul-hero-kebab.png",
-  wrap: "/brand/dish-kebab-rollo.png",
-  pan: "/brand/dish-kebab-pan.png",
-  lahmacun: "/brand/dish-lahmacun.png",
-  pizza: "/brand/dish-pizza-kebab.png",
-  iskender: "/brand/dish-iskender-kebab.png",
-  baklava: "/brand/dish-baklava-pistachio.png",
-  softs: "/brand/drink-softs.png",
-  water: "/brand/drink-water.png",
-  efes: "/brand/drink-efes.png"
+  hero: PLACEHOLDER_IMAGES.heroLuxe,
+  plateDark: PLACEHOLDER_IMAGES.foostBoxDark,
+  plateTray: PLACEHOLDER_IMAGES.foostTrayCola,
+  plateLight: PLACEHOLDER_IMAGES.foostBoxLight,
+  rollo: PLACEHOLDER_IMAGES.dishKebabRollo,
+  wrap: PLACEHOLDER_IMAGES.dishKebabWrapMarble,
+  wrapStudio: PLACEHOLDER_IMAGES.dishKebabWrapStudio,
+  pan: PLACEHOLDER_IMAGES.dishKebabPan,
+  lahmacun: PLACEHOLDER_IMAGES.dishLahmacun,
+  pizzaTray: PLACEHOLDER_IMAGES.dishPizzaTray,
+  pizzaClose: PLACEHOLDER_IMAGES.dishPizzaClose,
+  pizzaKebab: PLACEHOLDER_IMAGES.dishPizzaKebab,
+  iskender: PLACEHOLDER_IMAGES.dishIskender,
+  bakedBowls: PLACEHOLDER_IMAGES.dishBakedBowls,
+  baklava: PLACEHOLDER_IMAGES.dishBaklavaPistachio,
+  baklavaWalnut: PLACEHOLDER_IMAGES.dishBaklavaWalnut,
+  softs: PLACEHOLDER_IMAGES.drinkSofts,
+  water: PLACEHOLDER_IMAGES.drinkWater,
+  efes: PLACEHOLDER_IMAGES.drinkEfes
 };
 
 const PRODUCT_PHOTOS = {
-  "carne-con-arroz": PHOTO_LIBRARY.hero,
-  "patatas-con-carne": PHOTO_LIBRARY.hero,
-  "plato-kebab-patatas": PHOTO_LIBRARY.hero,
-  "plato-kebab-arroz": PHOTO_LIBRARY.hero,
-  "plato-kebab": PHOTO_LIBRARY.hero,
+  "carne-con-arroz": PHOTO_LIBRARY.plateTray,
+  "patatas-con-carne": PHOTO_LIBRARY.plateDark,
+  "plato-kebab-patatas": PHOTO_LIBRARY.plateLight,
+  "plato-kebab-arroz": PHOTO_LIBRARY.plateTray,
+  "plato-kebab": PHOTO_LIBRARY.plateDark,
   "kebab-pan": PHOTO_LIBRARY.pan,
-  "kebab-rollo": PHOTO_LIBRARY.wrap,
-  "lahmacun": PHOTO_LIBRARY.pizza,
-  "lahmacun-menu": PHOTO_LIBRARY.lahmacun,
+  "kebab-rollo": PHOTO_LIBRARY.rollo,
+  lahmacun: PHOTO_LIBRARY.lahmacun,
+  "lahmacun-menu": PHOTO_LIBRARY.pizzaTray,
   "kebab-pan-menu": PHOTO_LIBRARY.pan,
-  "kebab-rollo-menu": PHOTO_LIBRARY.wrap,
+  "kebab-rollo-menu": PHOTO_LIBRARY.rollo,
   "hamburguesa-pollo-menu": PHOTO_LIBRARY.pan,
-  "rollo-pequeno": PHOTO_LIBRARY.wrap,
+  "rollo-pequeno": PHOTO_LIBRARY.rollo,
   falafel: PHOTO_LIBRARY.hero,
-  "nuggets-pollo": PHOTO_LIBRARY.hero,
-  "alitas-pollo": PHOTO_LIBRARY.hero,
-  "aros-cebolla": PHOTO_LIBRARY.hero,
-  "patatas-fritas": PHOTO_LIBRARY.hero,
-  "patatas-deluxe": PHOTO_LIBRARY.hero,
-  "papas-horno": PHOTO_LIBRARY.hero,
-  "pizza-kebab": PHOTO_LIBRARY.pizza,
+  "nuggets-pollo": PHOTO_LIBRARY.plateLight,
+  "alitas-pollo": PHOTO_LIBRARY.plateDark,
+  "aros-cebolla": PHOTO_LIBRARY.plateLight,
+  "patatas-fritas": PHOTO_LIBRARY.plateLight,
+  "patatas-deluxe": PHOTO_LIBRARY.bakedBowls,
+  "papas-horno": PHOTO_LIBRARY.bakedBowls,
+  "pizza-kebab": PHOTO_LIBRARY.pizzaKebab,
   "iskender-kebab": PHOTO_LIBRARY.iskender,
   "dulce-pistacho": PHOTO_LIBRARY.baklava,
-  "dulce-nueces": PHOTO_LIBRARY.baklava,
+  "dulce-nueces": PHOTO_LIBRARY.baklavaWalnut,
   refrescos: PHOTO_LIBRARY.softs,
   agua: PHOTO_LIBRARY.water,
   cerveza: PHOTO_LIBRARY.efes,
   efes: PHOTO_LIBRARY.efes
 };
 
+const PRODUCT_NAME_ALIASES = {
+  "pilavli et": "carne-con-arroz",
+  "carne con arroz": "carne-con-arroz",
+  "beef with rice": "carne-con-arroz",
+  "etli patates": "patatas-con-carne",
+  "patatas con carne": "patatas-con-carne",
+  "fries with meat": "patatas-con-carne",
+  "kebap tabagi patates": "plato-kebab-patatas",
+  "plato kebab patatas": "plato-kebab-patatas",
+  "kebab plate fries": "plato-kebab-patatas",
+  "kebap tabagi pilav": "plato-kebab-arroz",
+  "plato kebab arroz": "plato-kebab-arroz",
+  "kebab plate rice": "plato-kebab-arroz",
+  "kebap tabagi": "plato-kebab",
+  "plato kebab": "plato-kebab",
+  "kebab plate": "plato-kebab",
+  "ekmek arasi kebap": "kebab-pan",
+  "kebab pan": "kebab-pan",
+  "kebab sandwich": "kebab-pan",
+  "kebap durum": "kebab-rollo",
+  "kebab rollo": "kebab-rollo",
+  "kebab wrap": "kebab-rollo",
+  lahmacun: "lahmacun",
+  "lahmacun menu": "lahmacun-menu",
+  "kebab pan menu": "kebab-pan-menu",
+  "ekmek arasi kebap menu": "kebab-pan-menu",
+  "kebap durum menu": "kebab-rollo-menu",
+  "kebab rollo menu": "kebab-rollo-menu",
+  "hamburguesa pollo menu": "hamburguesa-pollo-menu",
+  "tavuk burger menu": "hamburguesa-pollo-menu",
+  "rollo pequeno": "rollo-pequeno",
+  "kucuk durum": "rollo-pequeno",
+  falafel: "falafel",
+  "nuggets de pollo": "nuggets-pollo",
+  "tavuk nuggets": "nuggets-pollo",
+  "alitas de pollo": "alitas-pollo",
+  "tavuk kanat": "alitas-pollo",
+  "aros de cebolla": "aros-cebolla",
+  "sogan halkasi": "aros-cebolla",
+  "patatas fritas": "patatas-fritas",
+  "patates kizartmasi": "patatas-fritas",
+  "patatas deluxe": "patatas-deluxe",
+  "deluxe patates": "patatas-deluxe",
+  "papas al horno": "papas-horno",
+  "firin patates": "papas-horno",
+  "pizza kebab": "pizza-kebab",
+  "kebap pizza": "pizza-kebab",
+  "iskender kebab": "iskender-kebab",
+  "iskender kebap": "iskender-kebab",
+  "dulce pistacho": "dulce-pistacho",
+  "antep fistikli tatli": "dulce-pistacho",
+  "pistachio dessert": "dulce-pistacho",
+  "dulce nueces": "dulce-nueces",
+  "cevizli tatli": "dulce-nueces",
+  "walnut dessert": "dulce-nueces",
+  refrescos: "refrescos",
+  "gazli icecekler": "refrescos",
+  "soft drinks": "refrescos",
+  agua: "agua",
+  su: "agua",
+  water: "agua",
+  cerveza: "cerveza",
+  bira: "cerveza",
+  beer: "cerveza",
+  efes: "efes"
+};
+
+function normalizeProductToken(value = "") {
+  return String(value)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+function findPhotoKey(productKeyOrName = "") {
+  if (!productKeyOrName) {
+    return "";
+  }
+
+  if (PRODUCT_PHOTOS[productKeyOrName]) {
+    return productKeyOrName;
+  }
+
+  const normalized = normalizeProductToken(productKeyOrName);
+  return PRODUCT_NAME_ALIASES[normalized] || "";
+}
+
 export function menuPhoto(productId) {
   return PRODUCT_PHOTOS[productId] || "";
+}
+
+export function resolveProductPhoto(productKeyOrId, fallback = "", product = null) {
+  const candidates = [
+    productKeyOrId,
+    product?.id,
+    product?.name_tr,
+    product?.name_es,
+    product?.name_en,
+    product?.name?.tr,
+    product?.name?.es,
+    product?.name?.en
+  ].filter(Boolean);
+
+  for (const candidate of candidates) {
+    const key = findPhotoKey(candidate);
+    if (key && PRODUCT_PHOTOS[key]) {
+      return PRODUCT_PHOTOS[key];
+    }
+  }
+
+  return fallback || "";
 }
 
 function pieces(kind) {
@@ -208,3 +330,8 @@ export function menuArtwork(productId, categoryId) {
 
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 }
+
+
+
+
+

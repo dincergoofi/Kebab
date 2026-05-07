@@ -1,6 +1,6 @@
 ﻿import { PLACEHOLDER_IMAGES } from "../config/appConfig.js";
 import { repairDeep } from "../utils/text.js";
-import { menuArtwork, menuPhoto } from "./menuArtwork.js";
+import { menuArtwork, resolveProductPhoto } from "./menuArtwork.js";
 
 function menuProduct({
   id,
@@ -26,7 +26,7 @@ function menuProduct({
     description,
     price,
     currency: "EUR",
-    image_url: menuPhoto(id) || menuArtwork(id, categoryId) || image,
+    image_url: resolveProductPhoto(id, menuArtwork(id, categoryId) || image),
     ingredients,
     allergens,
     calories,
@@ -88,7 +88,7 @@ const RAW_DEMO_EXPERIENCE = {
     },
     logo_image_url: PLACEHOLDER_IMAGES.logoLuxe,
     cover_image_url: PLACEHOLDER_IMAGES.heroLuxe,
-    hero_video_url: "",
+    hero_video_url: PLACEHOLDER_IMAGES.openingPrepVideo,
     social_links: [
       { label: "Instagram", url: "https://www.instagram.com/realistanbul.es" }
     ],
@@ -827,3 +827,5 @@ const RAW_DEMO_EXPERIENCE = {
 };
 
 export const demoExperience = repairDeep(RAW_DEMO_EXPERIENCE);
+
+
